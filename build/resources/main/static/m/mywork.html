@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="../js/main.js"></script> 
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="me">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="mywork.html" auth="me"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">my work</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList worklist" style="min-width: 400px; max-width: 400px;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center; justify-content: space-between;">
+                                    <span class="itemListTitle">작업</span>
+                                    <div class="wrap" style="display: flex; flex-direction: row; justify-content: flex-end;">
+                                        <div class="toggleSwitchView">
+                                            <span class="toggleSwitchTitle material-icons">done</span>
+                                            <label class="switch">
+                                                <input type="checkbox" class="currentworkkind" onchange="toggleWorkListKind(this)">
+                                                <span class="slider"></span> 
+                                            </label>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem" style="width: 20%;">
+                                        <span>아이템</span>
+                                    </div>
+                                </div>      
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 210px); overflow-x: hidden;">
+                                    <div class="colFlexContainer" id="worklist" c-bind="worklist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <item>                                        
+                                            <div class="workView" c-bind="workpkey:workpkey:selectWork" style="cursor: pointer;">
+                                                <div class="workThumb">
+                                                    <img src="/img/noimage.jpg" c-bind="thumb:src:getImage" alt="thumb" onerror="this.src='/img/noimage.jpg'">
+                                                </div>
+                                                <div class="workInfo">
+                                                    <div class="workRow episode">
+                                                        <span c-bind="episodename:text:formatEpisodeName"></span>                                                        
+                                                        <span class="material-icons" style="font-size: 20px;" c-bind="workcauselist:text:setRequestAlarm"></span>
+                                                    </div>
+                                                    <div class="workRow"  style="border-top: 1px solid var(--theme-color-bg);">                                                        
+                                                        <div>
+                                                            <span c-bind="kind:text:formatTaskKind" style="margin-right: 8px;"></span>
+                                                            <span c-bind="status:text:formatWorkStatus"></span>
+                                                        </div>
+                                                        
+                                                        <div class="progressView" style="width: 100px;">
+                                                            <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                            <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </item>                                        
+                                        <div class="bindmore" bind-id="worklist" onclick="showMoreList(this)">
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>작업이 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList fragments" style="display: none;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle"></span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="pickerView">
+                                        <div class="pickerStart">
+                                            <div class="categoryContainer">
+                                                <span class="category active" category="request" onclick="selectItem(this, showRequest())">요청</span>
+                                                <span class="category" category="fileviewer" onclick="selectItem(this, showFileViewer())">파일</span>
+                                                <span class="category" category="style" onclick="selectItem(this, showStyle())">스타일</span>
+                                            </div>
+                                        </div>
+                                        <div class="pickerEnd"></div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 210px); overflow-x: hidden;">
+                                    <div class="fragment request" loadsrc="../fragment/request.html"></div>
+                                    <div class="fragment fileviewer" loadsrc="../fragment/workfileviewer.html" style="display: none;"></div>
+                                    <div class="fragment style" loadsrc="../fragment/style.html" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+</html>
+<script>
+    function runSetup() {
+        findItems(document);  
+        showSkeleton('.worklist');
+        setListWork();        
+    }
+    
+    function setListWork() {
+        MEAPI.listWorkToDo().then(data => {
+            console.log(data);
+            $('.fragments').hide();
+            $('.skeleton').hide();
+            hideAside();
+            clearItems('.worklist');
+            bindView($('.worklist').get(0), data.body);
+            $('.worklist .rowView[workpkey="' + getParam('workpkey') + '"]').click();
+        });
+    }
+
+    function setListWorkGone() {
+        MEAPI.listWorkGone().then(data => {
+            $('.fragments').hide();
+            $('.skeleton').hide();
+            hideAside();
+            clearItems('.worklist');
+            bindView($('.worklist').get(0), data.body);
+        });
+    }
+
+    function selectWork(v, d, e) {
+        $(e).on('click', function() {            
+            $('.worklist .workView').removeClass('active');
+            $(this).addClass('active');
+            MEAPI.getWorkDetail({workpkey : v}).then(data => {                
+                MEAPI.listEntryVersionCommit({workpkey : v}).then(res => {
+                    setListScroll(e);
+                    $('.fragments').show();
+                    data.body.work.entryversioncommitlist = res.body.entryversioncommitlist;
+                    $('.fragment.request').get(0).workdata = data.body.work;
+                    $('.fragment.fileviewer').get(0).workdata = data.body.work;
+                    $('.fragment.style').get(0).workdata = data.body.work;                                                            
+                    const currentCategory = $('.category.active').attr('category');                    
+                    switch(currentCategory) {
+                        case "style" : { showStyle(); break; }
+                        case "request" : { showRequest(); break; }
+                        case "fileviewer" : { showFileViewer(); break; }
+                        default : { showStyle() }
+                    }
+                });
+            })
+        });
+        return v;
+    }
+
+    function setListScroll(ele) {
+        const container = $('.worklist .overflowContainer').get(0);
+        container.scrollTop = ele.offsetTop - container.offsetTop;        
+    }
+
+    function toggleWorkListKind(ele) {
+        if(ele.checked) {
+            $('.toggleSwitchTitle').addClass('active');
+            setListWorkGone(); return;
+        }
+        $('.toggleSwitchTitle').removeClass('active');
+        setListWork();
+    }
+
+    function showRequest() {        
+        const requestlist = $('.fragment.request').get(0).workdata.workcauselist;
+        $('.fragment').hide();
+        $('.fragment.request').show();
+        $('.fragment.request .requestdetail').hide();
+        $('.fragments .itemListTitle').text('요청');
+        clearItems('.fragment.request');        
+        bindView($('.fragment.request').get(0), {workcauselist: requestlist});
+        showAside('../aside/detailwork.html', function(){ mapAside($('.fragment.request').get(0).workdata) });
+    }
+
+    function showFileViewer() {            
+        const versionlist = $('.fragment.fileviewer').get(0).workdata.entryversioncommitlist;
+        versionlist.sort((a, b) => { return a.entryversionpkey > b.entryversionpkey ? 1 : -1})        
+        $('.fragment').hide();
+        $('.fragment.fileviewer').show();
+        $('.fragment.fileviewer .entrylist').hide();
+        $('.fragments .itemListTitle').text('파일');
+        clearItems('.fragment.fileviewer .versionlist');
+        bindView($('.fragment.fileviewer .versionlist').get(0), { versionlist : versionlist});
+        showAside('../aside/detailwork.html', function(){ mapAside($('.fragment.fileviewer').get(0).workdata) });
+    }
+
+    function showStyle() {    
+        const stylelist = getChildList($('.fragment.style').get(0).workdata.characterlist, "stylelist");                
+        $('.fragment').hide();
+        $('.fragment.style').show();
+        $('.stylecanvas').hide();                
+        $('.fragments .itemListTitle').text('스타일');
+        clearItems('.fragment.style');
+        bindView($('.fragment.style').get(0), {stylelist: stylelist});
+        showAside('../aside/detailwork.html', function(){ mapAside($('.fragment.style').get(0).workdata) });
+    }
+
+    function updateUI(msg) {
+        showToast(msg);        
+        setListWork();
+    }
+
+    function onEntryViewClick(v, d, e) {
+        $(e).on('click', function() {
+            showAside('../aside/detailentry.html', function(){ mapAside(d) });
+        });
+        if(d.isfile == "Y") { 
+            $(e).on('dblclick', function() {
+                downloadFile(d.entryversionpkey);
+            });   
+        } else {
+            $(e).on('dblclick', function(){                
+                updateEntrylist(d);
+            });
+        }  
+        return v;
+    }
+
+    function formatEpisodeName(v, d, e) {
+        return `${d.titlename} > ${v}`
+    }
+
+    function onDownloadClick(v, d, e) {
+        $(e).on('click', function(){                       
+            if(d.isfile == "Y") {
+                downloadFile(d.entryversionpkey);
+            } else {
+                downloadFolder(v, $('.versionlist .rowView.active').attr('updatesetpkey'), d.workpkey);
+            }
+        })        
+        return v;
+    }
+</script>

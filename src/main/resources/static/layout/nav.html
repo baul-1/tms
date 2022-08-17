@@ -1,0 +1,111 @@
+<div class="navStartContainer">
+    <div class="userContainer" style="cursor: pointer;">
+        <div class="profileView">
+            <div class="thumb">
+                <span class="thumb material-icons" style="background-color: var(--theme-color-prime);" c-bind="auth:text:setUserThumb"></span>
+            </div>
+            <div class="infoContainer">
+                <div class="info">
+                    <span class="name" c-bind="name:text"></span>
+                    <div class="detail" c-bind="auth:text:setDetail"></div>
+                </div>
+                <div class="actions"></div>
+            </div>
+        </div>        
+    </div>
+    <div class="menuContainer">
+        <div class="menuView" id="menu_overview" viewlink="overview.html" auth="all">
+            <span class="material-icons thumb">dashboard</span>
+            <span class="name">overview</span>
+        </div>
+        <div class="menuView" id="menu_overview" viewlink="title.html" auth="com" style="display: none;">
+            <span class="material-icons thumb">auto_stories</span>
+            <span class="name">title</span>
+        </div>
+        <div class="menuView" id="menu_overview" viewlink="team.html" auth="com" style="display: none;">
+            <span class="material-icons thumb">group</span>
+            <span class="name">team</span>
+        </div>
+        <div class="menuView" id="menu_overview" viewlink="style.html" auth="com" style="display: none;">
+            <span class="material-icons thumb">style</span>
+            <span class="name">style</span>
+        </div>
+        <div class="menuView" id="menu_overview" viewlink="taskmanagement.html" auth="tm" style="display: none;">
+            <span class="material-icons thumb">task</span>
+            <span class="name">task</span>
+        </div>
+        <div class="menuView" id="menu_overview" viewlink="member.html" auth="tm" style="display: none;">
+            <span class="material-icons thumb">groups</span>
+            <span class="name">member</span>
+        </div>
+        <div class="menuView" id="menu_overview" viewlink="mywork.html" auth="me" style="display: none;">
+            <span class="material-icons thumb">work</span>
+            <span class="name">my work</span>
+        </div>
+<!--         <div class="menuView" id="menu_overview" viewlink="mypage.html" auth="me" style="display: none;">
+            <span class="material-icons thumb">face</span>
+            <span class="name">my page</span>
+        </div> -->
+    </div>
+</div>
+<div class="navEndContainer" onclick="toggleNav()">
+    <span class="material-icons toggle">chevron_left</span>
+</div>
+
+
+<script>
+    checkNavToken();        
+    let auth = $('nav').attr('auth');    
+    $(".menuView[auth='"+ auth +"']").show();
+    $('[viewlink]').each(function(){
+        $(this).on('click', function(){            
+            location.href = $(this).attr('viewlink');
+        });
+    });
+
+    let currentMenuId = $('nav').attr('currentmenu');  
+    document.querySelector(".menuView[viewlink='"+ currentMenuId +"']").classList.add('active');
+    
+    
+    function editProfile() {
+        showToast("준비중입니다.");
+    }
+
+    function checkNavToken() {
+        const token = sessionStorage.getItem('nav');        
+        if(token) {            
+            $('.toggle').text('chevron_right');
+            $('nav').addClass('shrink');
+            try{onNavShrink()}catch{}
+            return;                    
+        }        
+    }
+
+    function toggleNav() {        
+        if($('nav').hasClass('shrink')) {            
+            sessionStorage.removeItem('nav');
+            $('.toggle').text('chevron_left');
+            $('nav').removeClass('shrink');            
+            try{onNavExpand()}catch{}
+            return;
+        }
+        sessionStorage.setItem('nav', "Y");
+        $('.toggle').text('chevron_right');
+        $('nav').addClass('shrink');                
+        try{onNavShrink()}catch{}
+    }
+
+    function setUserThumb(v, d, e) {
+        if(v == "com") { return "storefront" }
+        if(v == "tm") { return "assignment_ind" }
+        if(v == "me") { return "person" }
+        return v;
+    }    
+    
+    function setDetail(v, d, e) {
+        if(v == "com") { return "ADMIN"}
+        if(v == "tm") { return "TEAM"}
+        if(v == "me") { return "WORKER"}
+    }
+
+</script>

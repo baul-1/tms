@@ -1,0 +1,33 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">에피소드 추가</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">      
+        <div class="asideContent">
+            <div class="inputView">
+                <input id="name" name="name" type="text" required>
+                <label for="name">에피소드 이름</label>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitCreateEpisode()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitCreateEpisode() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.titlepkey = $('.asideView').get(0).adata.titlepkey;
+        if(formdata.name.trim() == "") { showToast("에피소드 이름을 입력하세요"); return; }    
+        COMAPI.addEpisode(formdata).then(res => {            
+            updateEpisodeUI("에피소드가 추가되었습니다.");
+        }).catch();
+    }
+
+    function mapAside(d) {        
+        $('.asideView').get(0).adata = d;
+    }
+</script>

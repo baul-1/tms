@@ -1,0 +1,28 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">작업 재배정</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <span class="msg"></span>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitRecoverMember()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitRecoverMember() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.workerpkey = $('.asideView').get(0).adata.workerpkey;             
+        TMAPI.setMemberStatusToNormal(formdata).then(res => { updateUI("작업자의 배정중단이 해제되었습니다."); }).catch();
+    }    
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;
+        $('.asideView .msg').text(d.name + ' 작업자를 재배정 하겠습니까?')
+    }
+</script>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>    
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="taskmanagement.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">create task</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList titlelist" style="min-width: 320px; max-width: 320px;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">타이틀</span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>아이템</span>
+                                    </div>                                
+                                </div>                                                               
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" c-bind="titlelist:list" style="gap: 10px;">
+                                        <item>
+                                            <div class="profileView" c-bind="titlepkey:titlepkey:showEpisodeList" style="cursor: pointer;">
+                                                <div class="wrap">
+                                                    <img class="thumb material-icons" c-bind="thumb:src:getImage" onerror="this.src='/img/noimage.jpg'"></img>
+                                                </div>
+                                                <div class="infoContainer">
+                                                    <div class="info">
+                                                        <span class="name" c-bind="name:text"></span>
+                                                        <div class="detail">
+                                                            <span class="episodecount" c-bind="episodecnt:text, titlepkey:titlepkey"></span>
+                                                            <span>EPISODES</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="actions">
+
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>타이틀이 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList episodelist" style="min-width: 320px; max-width: 320px; display: none;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">에피소드</span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem" >
+                                        <span>에피소드 이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>상태</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 210px);">
+                                    <div class="colFlexContainer" c-bind="episodelist:list" style="gap: 10px;">
+                                        <item>
+                                            <div class="rowView light" c-bind="episodepkey:episodepkey:showTaskForm" style="cursor: pointer;">
+                                                <div class="rowItem">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span c-bind="status:text:formatEpisodeStatus"></span>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>에피소드가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList taskform" style="display: none;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;"></div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>새 태스크</span>
+                                    </div>                                
+                                </div>                                                               
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="cellView">
+                                    <div class="cellCol">
+                                        <div class="cellRow">
+                                            <div class="cell view" for="taskname">
+                                                <span class="cellTitle">생성경로</span>
+                                                <div class="path">
+                                                    <span class="title" name="titlepkey"></span>
+                                                    <span> > </span>
+                                                    <span class="episode" name="episodepkey"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cellRow">
+                                            <label class="cell" for="taskname">
+                                                <span class="cellTitle">태스크 이름</span>
+                                                <input type="text" name="name" id="taskname" placeholder="태스크 이름을 입력하세요" usetemp="Y" oninput="onTasknameChange(this)">
+                                            </label>
+                                        </div>
+                                        <div class="cellRow">
+                                            <div class="cell">
+                                                <span class="cellTitle">종류</span>
+                                                <div class="wrap" style="display: flex; flex-direction: row; gap: 16px;">
+                                                    <div class="radioView">                                                
+                                                        <label for="taskkinda">밑색</label>
+                                                        <input type="radio" class="taskkind" name="kind" id="taskkinda" value="A" checked onchange="onRadioChange(this)">
+                                                    </div>
+                                                    <div class="radioView">                                                
+                                                        <label for="taskkindb">채색</label>
+                                                        <input type="radio" class="taskkind" name="kind" id="taskkindb" value="B" onchange="onRadioChange(this)">
+                                                    </div>
+                                                    <div class="radioView">                                                
+                                                        <label for="taskkindetc">기타</label>
+                                                        <input type="radio" class="taskkind" name="kind" id="taskkindetc" value="ETC" onchange="onRadioChange(this)">
+                                                    </div>
+                                                </div>                                            
+                                            </div>
+                                        </div>
+                                        <div class="cellRow">
+                                            <label class="cell" for="taskstartdate">
+                                                <span class="cellTitle">시작일</span>
+                                                <input type="date" name="startdate" id="taskstartdate">
+                                            </label>
+                                            <label class="cell" for="taskenddate">
+                                                <span class="cellTitle">종료일</span>
+                                                <input type="date" name="enddate" id="taskenddate">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rowFlexContainer" style="justify-content: flex-end;">
+                                    <div class="buttonView">
+                                        <span onclick="submitCreateTask()">확인</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+</html>
+
+<script>
+    function runSetup() {
+        findItems(document);
+        setListTitle();        
+    }
+
+    function setListTitle() {
+        TMAPI.listTitle().then(data => {            
+            bindView($('.titlelist')[0], data.body);
+        });        
+    }
+
+    function showEpisodeList(v, d, e) {
+        $(e).on('click', function(){
+            TMAPI.listEpisode({titlepkey : v}).then(data => {
+                clearItems('.episodelist');
+                $('.titlelist .profileView').removeClass('active');
+                $(e).addClass('active');
+                $('.episodelist').show();
+                $('.taskform').hide();
+                $('.path .title').text(d.name);
+                $('.path .title').attr('titlepkey', v);
+                data.body.titlename = d.name;
+                bindView($('.episodelist')[0], data.body);
+            })
+        });
+    }
+
+    function showTaskForm(v, d, e) {
+        $(e).on('click', function() {
+            $('.episodelist .rowView').removeClass('active');
+            $(e).addClass('active');
+            $('.path .episode').text(d.name);
+            $('.path .episode').attr('episodepkey', v);
+            $('.taskform').show();
+            var titlename = $('.titlelist .profileView.active').get(0).binddata.name;
+            var taskkindid = $('.taskkind:checked').get(0).id;
+            var label = $('label[for="' + taskkindid + '"]').text();
+            $('#taskname').attr('usetemp', "Y");
+            $('#taskname').val(`${titlename} - ${d.name} : ${label}`);
+        });
+    }
+
+    function submitCreateTask() {
+        const taskdata = getDataFrom('.taskform');        
+        if(isValidForm(taskdata)) {
+            TMAPI.addTask(taskdata).then(res => {
+                if(res.head.status != "error") {
+                    alert("태스크가 추가되었습니다.");
+                    location.href = "taskmanagement.html?taskpkey=" + res.body.taskpkey;
+                }
+            }).catch();
+        }                   
+    }
+
+    function isValidForm(data) {
+        var todaystring = formatDTS(new Date());
+        if(data.name.trim() == "") { showToast("태스크 이름을 입력해주세요"); return false;}
+        if(data.titlepkey == undefined) { showToast("타이틀을 선택해주세요"); return false;}
+        if(data.episodepkey == undefined || data.episodepkey == "") { showToast("에피소드를 선택해주세요"); return false;}
+        if(data.startdate == undefined || data.startdate == "") { showToast("시작일을 선택해주세요"); return false;}
+        if(data.enddate == undefined || data.enddate == "") { showToast("종료일을 선택해주세요"); return false;}
+        if(data.startdate) { data.startdate = data.startdate.replace(/-/g, ""); }
+        if(data.enddate) { data.enddate = data.enddate.replace(/-/g, ""); }            
+        if(data.startdate - todaystring <= 0) { showToast("시작일을 오늘 이후로 선택해주세요."); return false; }     
+        if(data.enddate - data.startdate < 0) { showToast("종료일을 시작일 이후로 선택해주세요."); return false; }
+        return true;
+    }
+
+    function onRadioChange(radio) {
+        if($('#taskname').attr('usetemp') != "Y") { return; }
+        var titlename = $('.titlelist .profileView.active').get(0).binddata.name;
+        var epiname = $('.episodelist .rowView.active').get(0).binddata.name;
+        var taskkindid = $('.taskkind:checked').get(0).id;
+        var label = $('label[for="' + taskkindid + '"]').text();        
+        $('#taskname').val(`${titlename} - ${epiname} : ${label}`);
+    }
+
+    function onTasknameChange(ele) {
+        $(ele).attr("usetemp", "N");
+    }
+    
+    
+</script>

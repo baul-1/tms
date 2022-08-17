@@ -1,0 +1,62 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">작업 결과 검토 요청</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">      
+        <div class="asideContent">
+            <div class="propertyView">
+                <span class="key">작업명</span>
+                <span class="value" c-bind="workname:text"></span>
+            </div>
+            <div class="inputView">
+                <input id="requestcutcount" name="requestcutcount" type="text" required>
+                <label for="requestcutcount">컷</label>
+            </div>
+            <div class="inputView">
+                <input id="comment" name="comment" type="text" required>
+                <label for="comment">메모</label>
+            </div>
+            <div class="propertyView">
+                <span class="key">작업 파일 버전</span>
+                <select class="version" updatesetpkey c-bind="entryversioncommitlist:listtemplete:selectResultVesion" c-tag="c-item" style="font-size: 12px;">
+                    <option value="default" selected>버전 선택</option>
+                    <option listtempitem c-item="name:option, name:value, idx:idx, updatesetpkey:updatesetpkey"></option>
+                </select>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitCreateWorkResult()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitCreateWorkResult() {
+        const formdata = getDataFrom('.asideView');
+        formdata.workpkey = $('.asideView').get(0).adata.workpkey;
+        formdata.updatesetpkey = $('select.version')[0].updatesetpkey;
+        if(/[^0-9]/g.test(formdata.requestcutcount)) { showToast("숫자만 입력해주세요."); return;}
+        if(formdata.requestcutcount.trim() == "") { showToast("컷 수를 입력해주세요."); return; }
+        if(formdata.comment.trim() == "") { showToast("메모를 입력해주세요."); return; }        
+        console.log(formdata);
+        MEAPI.addWorkResult(formdata).then(res => { updateUI("작업 결과 검토를 요청하였습니다."); }).catch();
+    }
+
+    function mapAside(d) {              
+        $('.asideView').get(0).adata = d;
+        bindView($('.asideView').get(0), d);
+        $('select.version').get(0).sele   
+    }
+
+    function selectResultVesion(v, d, e) {
+        e.onchange = function() {
+            let selectedEle = e.options[e.selectedIndex];            
+            e.updatesetpkey = selectedEle.getAttribute('updatesetpkey');
+            console.log(selectedEle.getAttribute('updatesetpkey'));
+        }
+        return v;
+    }
+    
+</script>

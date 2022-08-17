@@ -1,0 +1,141 @@
+<div class="fileTreeSelectorViewerFragment" style="width: 100%; height: 100%;">
+    <div class="fragmentMain">
+        <div class="treeView" c-bind="entrylist:list" ondrop="dropHandle(event)" ondragover="dragOverHandle(event)" ondragleave="dragLeavehandle(event)">
+            <item>
+                <div class="treeItem" c-bind="entrypkey:entrypkey:appendSelectorChildItem, isfile:isfile, rel:rel, depth:depth, path:path, entrynum:entrynum" style="cursor: pointer;" >
+                    <div class="treeItemStart">                                
+                        <span class="material-icons" c-bind="isfile:text:formatEntryIcon"></span>                            
+                        <span class="name" c-bind="name:text"></span>
+                    </div>
+                    <div class="treeItemEnd">
+                        <span class="size" c-bind="size:text:formatEntrySize"></span>
+                        <div class="progressView" style="width: 100px; display: none;" >
+                            <span class="value"></span>
+                            <progress max="100" min="0"></progress>                
+                        </div>
+                    </div>
+                </div>
+            </item>      
+        </div>
+    </div>
+</div>
+
+<script>
+    var currentEntryNum = 0;
+    findItems($('.fileTreeSelectorViewerFragment').get(0));   
+      
+    function appendSelectorChildItem(v, d, e) {
+        $(e).css('padding-left', d.depth * 25 + "px");    
+        $(e).on('click', function() {
+            $(e).toggleClass('active');
+            let seletedEle = document.querySelectorAll('.fileTreeSelectorViewerFragment .treeItem.active');
+            let pathlist = [];
+            Array.from(seletedEle).forEach(ele => { pathlist.push({path : ele.getAttribute('path'), isfile : ele.getAttribute('isfile')})});
+            showAside('../aside/selectedfile.html', function(){ mapAside(pathlist)});
+        })    
+        d.entrylist.forEach(entry => { appendTreeItem(entry, e, $('.fileTreeSelectorViewerFragment .treeView').get(0).tempdom.cloneNode(true)); });
+        return v;
+    }
+
+    function onSelectedItems(items) {                
+        const selectedEntry = formatEntryListFromDataTransferItemList(items);
+        const selectedTree = getTreeFromEntrylist(selectedEntry);        
+        setTimeout(() => {           
+            $('.fileTreeSelectorViewerFragment').get(0).entrylist = selectedTree; 
+            clearItems('.fileTreeSelectorViewerFragment');           
+            bindView($('.fileTreeSelectorViewerFragment').get(0), {entrylist : selectedTree});
+            if($('.fileTreeViewerFragment')) { compareTrees(); }
+        }, 1000);
+    }
+
+    function isSameItem(item, newitems) {
+        for(i=0; i<newitems.length; i++) {
+            if(newitems[i].path == item.path) { return true; } 
+        }
+        return false;
+    }
+    
+
+
+    function getListFromTree(list) {        
+        let ret = [];        
+        ret = ret.concat(list);
+        Array.from(list).forEach( item => { if(item.entrylist) { ret = ret.concat(getListFromTree(item.entrylist)) } });    
+        return ret;
+    }
+
+
+    function compareTrees() {
+        let oldEle = document.querySelectorAll('.fileTreeViewerFragment .treeItem');
+        let newEle = document.querySelectorAll('.fileTreeSelectorViewerFragment .treeItem');
+
+        if(newEle.length <=0) { return; }
+
+
+        $('.treeItem').removeClass('UPDATE');
+        $('.treeItem').removeClass('DELETE');
+        $('.treeItem').removeClass('ADD');
+
+        // old => new
+        oldEle.forEach(oe => {
+            oe.binddata.edit = "";
+            /* if(oe.binddata.isfile == "Y") { oe.binddata.edit = "DELETE" } ; */
+            oe.binddata.edit = "DELETE";
+            newEle.forEach(ne => {
+                ne.binddata.edit = "";             
+                if(oe.binddata.path == ne.binddata.path) {
+                    oe.binddata.edit = "NORMAL";
+                    if(oe.binddata.size != ne.binddata.size) {
+                        ne.binddata.edit = "UPDATE";
+                        ne.binddata.entrypkey = oe.binddata.entrypkey;
+                        ne.binddata.rel = oe.binddata.rel;
+                        ne.binddata.parentnum = -2;
+                        ne.classList.add('UPDATE');
+                        return;
+                    }                
+                }
+            });
+            if(oe.binddata.edit == "DELETE") {
+                oe.classList.add('DELETE');
+                return;
+            }
+        });
+
+        // new => old
+        newEle.forEach(ne => {            
+            if(ne.binddata.edit == "UPDATE") { return; }                
+            oldEle.forEach(oe => {
+                if(ne.binddata.path == oe.binddata.path) {                    
+                    ne.binddata.edit = "NORMAL";                
+                    return;
+                }            
+            });
+            if(ne.binddata.edit != "NORMAL" && ne.binddata.edit != "UPDATE") {
+                ne.binddata.edit = "ADD";
+                ne.binddata.entrypkey = -1;
+                ne.classList.add('ADD');
+                ne.binddata.rel = getRelByPath(ne.binddata, oldEle);                  
+            }
+        });
+        
+    }
+
+    function getRelByPath(binddata, ele) {        
+        let ret = -2;
+        let path = binddata.path.substring(1);
+        let arr = path.split('/');    
+        if(arr.length <= 1) { return -1; }
+        arr.pop();
+        let parentPath = "/" + arr.join('/');
+        
+        ele.forEach(item => {            
+            if(item.binddata.path == parentPath) {
+                ret = item.binddata.entrypkey;                
+            }
+        });
+        return ret;
+    }
+
+
+
+</script>

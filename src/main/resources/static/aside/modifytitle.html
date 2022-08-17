@@ -1,0 +1,37 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">타이틀 수정</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">         
+        <div class="asideContent">
+            <img src="../img/noimage.jpg" c-bind="thumb:src:getImage, thumb:srca" name="thumb" class="imageSelector" alt="img" onclick="selectFile(this)" onerror="this.src='../img/noimage.jpg'">
+            <div class="inputView">
+                <input id="name" name="name" type="text" c-bind="name:value" required>
+                <label for="name">타이틀 이름</label>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitModifyTitle()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitModifyTitle() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.titlepkey = $('.asideView').get(0).adata.titlepkey;
+        if(formdata.name.trim() == "") { showToast("타이틀 이름을 입력하세요"); return; }        
+        COMAPI.modifyTitle(formdata).then(res => {
+            if(res.head.status != "error") {
+                updateUI("타이틀이 변경되었습니다.");
+            }
+            console.log(res);}).catch(err => {alert(err)});
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;
+        bindView($('.asideView').get(0), d);        
+    }
+</script>

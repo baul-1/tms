@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="com">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="style.html" auth="com"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">style</div>
+                    </div>
+                    <div class="contentHeaderEndContainer">
+                        <span class="material-icons" style="font-size: 18px; cursor: pointer;" onclick="createCharacter()">add</span>
+                    </div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList characterlist medium">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">캐릭터</span>                                                                            
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>아이템</span>
+                                    </div>                                
+                                </div>                                                                           
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" id="characterlist" c-bind="characterlist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <item>
+                                            <div class="profileView" c-bind="characterpkey:characterpkey:onSelectCharacter" style="cursor: pointer;">
+                                                <div class="wrap">
+                                                    <img class="thumb material-icons" c-bind="thumb:src:getImage" onerror="this.src='/img/noimage.jpg'"></img>
+                                                </div>
+                                                <div class="infoContainer">
+                                                    <div class="info">
+                                                        <span class="name" c-bind="name:text"></span>
+                                                        <div class="detail">
+                                                            <span class="episodecount" c-bind="stylecnt:text, characterpkey:characterpkey"></span>
+                                                            <span>styles</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="actions">                                                        
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </item>
+                                        <div class="bindmore" bind-id="characterlist" onclick="fetchListCharacter()">
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>캐릭터가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList style" style="display: none;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">스타일</span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>아이템</span>
+                                    </div>                                
+                                </div>
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="fragment style" loadsrc="../fragment/style.html" kind="edit"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+    
+</body>
+</html>
+
+<script>
+    function runSetup() {        
+        findItems(document);        
+        fetchListCharacter();
+    }
+
+    function fetchListCharacter() {
+        const listname = "characterlist";
+        const config = {
+            start : getListStart(listname),
+            limit : getListLimit(listname)
+        }
+        COMAPI.listCharacter(config).then(data => {                        
+            bindView(document.querySelector('.' + listname), data.body);
+            setBindMore(data.body.next, listname);
+        });
+    }
+
+    function selectFile(ele){        
+        const progressFn = percent => { }   
+        const retfn = url => {
+            $(ele).attr('src', IMG_SERVER + "com/file" + url);
+            $(ele).attr('srca', url);
+        }
+        sendFileWithInput(progressFn, retfn, "com");
+    }
+
+    function onSelectCharacter(v, d, e) {
+        $(e).on('click', function() {
+            $('.fragment.style').show();
+            $('.stylecanvas').hide();
+
+            $('.characterlist .profileView').removeClass('active');
+            $(e).addClass('active');            
+            
+            fetchCharacter(v);
+            showAside('../aside/detailcharacter.html', function(){ mapAside(d) });
+        });
+        return v;
+    }
+
+    function fetchCharacter(characterpkey) {
+        const config = {
+            characterpkey : characterpkey
+        }
+        COMAPI.getCharacter(config).then(data => {                     
+            $('.itemList.style').show();
+            clearItems('.stylelist');                 
+            bindView($('.itemList.style').get(0), data.body.character);                
+        });
+    }
+        
+
+    function createCharacter() {
+        $('.fragment.style').hide();
+        showAside('../aside/createcharacter.html');
+    }
+
+    function updateUI(msg){
+        showToast(msg);
+        hideAside();
+        clearItems('.characterlist');                       
+        clearItems('.stylelist');
+        $('.itemList.style').hide();
+        fetchListCharacter();
+    }
+
+
+    function updateStyleUI(msg) {
+        showToast(msg);        
+        clearItems('.stylelist');
+        $('.itemList.style').hide();
+        $('.characterlist .profileView.active').click();
+    }
+    
+</script>

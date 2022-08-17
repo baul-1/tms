@@ -1,0 +1,198 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">작업 상세</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <div class="propertyView">
+                <span class="key">진행률</span>
+                <div class="progressView" style="display: none;" c-bind="status:status:showProgressView">
+                    <span class="value" c-bind="progress:text:formatProgress"></span>
+                    <progress c-bind="progress:value" max="100" min="0"></progress>                
+                </div>
+                <div class="rangeView" style="display: none;" c-bind="status:status:showRangeView">
+                    <span class="range" id="progressvalue" c-bind="progress:text:formatProgress"></span>
+                    <input type="range" c-bind="progress:value:setRange, workpkey:workpkey, progress:progress" max="99" min="0" oninput="onRangeInput(this, value, 'progressvalue')" onchange="updateWorkProgress(this, value)"></input>
+                </div>            
+            </div>
+            <div class="propertyView" c-bind="tmname:tmname:setVisibility">
+                <span class="key">팀</span>
+                <span class="value" c-bind="tmname:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">작업자</span>
+                <span class="value" c-bind="workername:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">작업명</span>
+                <span class="value" c-bind="workname:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">컷</span>
+                <span class="value" c-bind="confirmcutcount:text:formatNumber"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">타이틀</span>
+                <span class="value" c-bind="titlename:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">에피소드</span>
+                <span class="value" c-bind="episodename:text"></span>
+            </div>
+             <div class="propertyView">
+                <span class="key">태스크</span>
+                <span class="value" c-bind="taskname:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">태스크 종류</span>
+                <span class="value" c-bind="kind:text:formatTaskKind"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">상태</span>
+                <span class="value" c-bind="status:text:formatWorkStatus"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">우선순위</span>
+                <span class="value" c-bind="priority:text:formatPriority"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">시작일</span>
+                <span class="value" c-bind="startdate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">종료일</span>
+                <span class="value" c-bind="enddate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">수락일</span>
+                <span class="value" c-bind="accepteddate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">완료일</span>
+                <span class="value" c-bind="donedate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView"></div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" c-bind="status:status:submitAcceptWork" style="display: none;">
+                <span>작업 수락</span>
+            </div> 
+            <div class="buttonView" c-bind="status:status:showRequestModifySchedule" style="display: none;">
+                <span>종료일 변경</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:showRequestCancelWork" style="display: none;">
+                <span>작업 취소</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:showRequestConfirmWorkResult" style="display: none;">
+                <span>결과 검토</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:goAddVersion" style="display: none;">
+                <span>파일 업로드</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:goManagement" style="display: none;">
+                <span>작업 관리</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:addStyle" style="display: none;">
+                <span>스타일 추가</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>    
+    function mapAside(d) {        
+        $('.asideView').get(0).adata = d;        
+        bindView($('.asideView').get(0), d);                
+    }    
+
+    function showRequestModifySchedule(v, d, e) {    
+        if(currentUser.auth != "me") { $(e).hide(); return v;}    
+        if(v == "REG" || v=="ACCEPT" || v == "ING") { $(e).show();}
+        else { $(e).hide();}
+        $(e).on('click', function(){
+            showAside('../aside/requestmodifyschedule.html', function(){ mapAside(d)});
+        })
+        return v;
+    }
+
+    function showRequestCancelWork(v, d, e) {
+        if(currentUser.auth != "me") { $(e).hide(); return v;}
+        if(v == "REG") { $(e).show() }
+        else { $(e).hide();}
+        $(e).on('click', function(){
+            showAside('../aside/requestcancelwork.html', function(){ mapAside(d)});
+        })
+        return v;
+    }
+
+    function showRequestConfirmWorkResult(v, d, e) {
+        if(currentUser.auth != "me") { $(e).hide(); return v;}
+        if(v == "ING") { $(e).show() }
+        else { $(e).hide();}
+        $(e).on('click', function(){
+            showAside('../aside/requestconfirmworkresult.html', function(){ mapAside(d)});
+        })
+        return v;
+    }
+
+    function submitAcceptWork(v, d, e) {
+        if(currentUser.auth != "me") { $(e).hide(); return v;}
+        if(v == "REG") { $(e).show(); }
+        else { $(e).hide();}
+        $(e).on('click', function(){
+            MEAPI.acceptWork({workpkey : d.workpkey}).then(res => {
+                updateUI('작업을 수락했습니다.');
+            });
+        })
+        return v;
+    }
+
+    function goAddVersion(v, d, e) {                
+        if(currentUser.auth != "me") { $(e).hide(); return v;}
+        if(v == "ING") { $(e).show(); } 
+        else { $(e).hide();}       
+        $(e).on('click', function() {
+            location.href = "createfileversion.html?workpkey=" + d.workpkey;
+        });
+        return v;
+    }
+
+    function addStyle(v, d, e) {                
+        if(currentUser.auth != "tm") { $(e).hide(); return v;}
+        if(location.pathname == "/tm/taskschedule.html" || location.pathname == "/tm/member.html") { $(e).hide(); return v; }
+        if(v == "REG" || v == "ACCEPT") { $(e).show(); } 
+        else { $(e).hide();}       
+        $(e).on('click', function() {
+            showAside('../aside/selectstyle.html', function(){ mapAside(d)});
+        });
+        return v;
+    }
+
+    function updateWorkProgress(ele, val) {     
+        if(parseInt($(ele).attr('progress'))  >= parseInt(val)) { showToast('작업 진행률은 감소할 수 없습니다.'); return; }
+        MEAPI.updateWorkProgress({ workpkey : $(ele).attr('workpkey'), progress : val}).then(res => {
+            updateUI('작업 진행률을 ' + val + '%로 업데이트 하였습니다.');
+        })
+    }
+
+    function showProgressView(v, d, e) {
+        if(currentUser.auth != "me") { $(e).show(); return v; }
+        if(v != "ING") { $(e).show(); return v}
+        $(e).hide();
+        return v;
+    }
+
+    function showRangeView(v, d, e){
+        if(currentUser.auth != "me") { $(e).hide(); return v; }
+        if(v == "ING") { $(e).show(); return v}
+        $(e).hide();
+        return v;
+    }
+
+    function goManagement(v, d, e) {
+        if(location.pathname == "/tm/taskschedule.html" || location.pathname == "/tm/member.html") { $(e).show();}
+        $(e).on('click', function(){
+            location.href = "taskmanagement.html?taskpkey=" + d.taskpkey + "&workpkey=" + d.workpkey;
+        });
+    }
+</script>

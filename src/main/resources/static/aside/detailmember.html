@@ -1,0 +1,133 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">멤버 상세</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <div class="propertyView">
+                <span class="key">이름</span>
+                <span class="value" c-bind="name:text"></span>
+            </div>
+            <div class="propertyView" c-bind="workerid:workerid:setVisibility">
+                <span class="key">아이디</span>
+                <span class="value" c-bind="workerid:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">배정일</span>
+                <span class="value" c-bind="joindate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">상태</span>
+                <span class="value" c-bind="status:text:formatMemberStatus"></span>
+            </div>
+            <div class="propertyView workgrouplist" style="height: 320px; border-bottom: none;" c-bind="workergrouplist:workergrouplist:setVisibility">
+                <span class="key">소속된 팀</span>
+                <div class="overflowContainer" style="height: 256px; overflow-y: auto; ">
+                    <div class="colFlexContainer" c-bind="workergrouplist:list" style="gap: 10px;" id="workgrouplist" listidx="0" step="50">
+                        <item>
+                            <div class="rowView" c-bind="taskmanagerpkey:taskmanagerpkey:selectTeam" style="border: 1px solid var(--theme-color-bg); cursor: pointer;">
+                                <div class="rowItem">
+                                    <span c-bind="tmname:text"></span>
+                                </div>
+                                <div class="rowItem">
+                                    <span c-bind="status:text:formatMemberStatus"></span>
+                                </div>
+                            </div>                                
+                        </item>
+                        <emptyitem style="display: none;">
+                            <div class="emptyContainer">
+                                <div class="msgBox">
+                                    <span>멤버가 속한 팀이 없습니다.</span>                                            
+                                </div>
+                            </div>
+                        </emptyitem>
+                    </div>
+                </div>                
+            </div>            
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" style="display: none;" c-bind="status:status:recoverMember">
+                <span>작업 재배정</span>
+            </div>
+            <div class="buttonView" style="display: none;" c-bind="status:status:awareMember">
+                <span>배정중단</span>
+            </div>
+            <div class="buttonView" style="display: none;" c-bind="status:status:requestKickMember">
+                <span>탈퇴요청</span>
+            </div>
+            <div class="buttonView" style="display: none;" c-bind="status:status:kickMember">
+                <span>탈퇴승인</span>
+            </div>
+            <div class="buttonView" style="display: none;" c-bind="status:status:rejoinMember">
+                <span>재가입</span>
+            </div>
+        </div>
+    </div>    
+</div>
+<script>    
+
+    function mapAside(d) {        
+        $('.asideView').get(0).adata = d;
+        findItems($('.asideView').get(0));
+        if(currentUser.auth == "com") {
+            const listname = "workgrouplist";
+            const config = {
+                workerpkey : d.workerpkey,
+                start : getListStart(listname),
+                limit : getListLimit(listname)
+            }
+            COMAPI.listWorkGroup(config).then(data => {     
+                console.log(data);       
+            $('.asideView').get(0).adata.workergrouplist = data.body.workergrouplist;            
+            bindView($('.asideView').get(0), $('.asideView').get(0).adata);
+            }); 
+        }
+        if(currentUser.auth == "tm") {
+            bindView($('.asideView').get(0), $('.asideView').get(0).adata);
+        }
+    }
+
+    function selectTeam(v, d, e) {
+        $(e).on('click', function(){
+            $('.teamlist .rowView[taskmanagerpkey="' + v + '"]').get(0).click();
+        });
+    }
+
+    function awareMember(v, d, e) {
+        if(v == "NORMAL" && currentUser.auth == "tm") { $(e).show(); }
+        $(e).on('click', function(){
+            showAside('../aside/awaremember.html', function(){ mapAside(d) });
+        });
+    }
+
+    function recoverMember(v, d, e) {
+        if(v == "AWARE" && currentUser.auth == "tm") { $(e).show(); }
+        if(v == "REQKICK" && currentUser.auth == "tm") { $(e).show(); }
+        $(e).on('click', function(){
+            showAside('../aside/recovermember.html', function(){ mapAside(d) });
+        });
+    }
+
+    function requestKickMember(v, d, e) {
+        if(v == "AWARE" && currentUser.auth == "tm") { $(e).show(); }
+        $(e).on('click', function(){
+            showAside('../aside/requestkickmember.html', function(){ mapAside(d) });
+        });
+    }
+
+    function kickMember(v, d, e) {
+        if(v == "REQKICK" && currentUser.auth == "com") { $(e).show(); }
+        $(e).on('click', function(){
+            showAside('../aside/kickmember.html', function(){ mapAside(d) });
+        });
+    }
+
+    function rejoinMember(v, d, e) {
+        if(v == "NOTTEAM" && currentUser.auth == "com") { $(e).show(); }
+        $(e).on('click', function(){
+            showAside('../aside/rejoinmember.html', function(){ mapAside(d) });
+        });
+    }
+
+</script>

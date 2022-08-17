@@ -1,0 +1,28 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">캐릭터 추가</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">  
+        <div class="asideContent">
+            <img src="../img/noimage.jpg" name="thumb" class="imageSelector" alt="img" onclick="selectFile(this)">
+            <div class="inputView">
+                <input id="name" name="name" type="text" required>
+                <label for="name">캐릭터 이름</label>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitCreateCharacter()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitCreateCharacter() {
+        var formData = getDataFrom('.asideView');       
+        if(formData.name.trim() == "") { showToast("캐릭터 이름을 입력하세요"); return; }
+        console.log(formData);
+        COMAPI.addCharacter(formData).then(res => { updateUI('캐릭터가 추가되었습니다.');} ).catch();
+    }
+</script>

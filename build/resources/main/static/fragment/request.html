@@ -1,0 +1,270 @@
+<div class="requestFragment">
+
+        <div class="rowFlexContainer" style="gap: 16px;">
+            <div class="colFlexContainer requestlist" c-bind="workcauselist:list" style="gap: 10px; min-width: 240px; max-width: 240px;">
+                <item>
+                    <div class="profileView" c-bind="workcausepkey:workcausepkey:showWorkCauseDetail" style="cursor: pointer;">
+                        <div class="thumb">
+                            <span class="thumb material-icons" style="background-color: var(--theme-color-prime);" c-bind="kind:text:formatWorkCauseKindIcon"></span>
+                        </div>
+                        <div class="infoContainer">
+                            <div class="info">
+                                <span class="name" c-bind="comment:text"></span>
+                                <div class="detail">
+                                    <span c-bind="workcausecreatedate:text:formatDateNum"></span>                                    
+                                </div>
+                            </div>
+                            <div class="actions">                                                                                                                                          
+                            </div>
+                        </div>
+                    </div> 
+                </item>
+                <emptyitem style="display: none;">
+                    <div class="emptyContainer">
+                        <div class="msgBox">
+                            <span>요청이 없습니다.</span>                                            
+                        </div>
+                    </div>
+                </emptyitem>
+            </div>
+
+            <div class="colFlexContainer requestdetail"style="gap: 10px; display: none;">
+                <div class="cellView">
+                    <div class="cellCol">
+                        <div class="cellRow">
+                            <div class="cellCol" style="min-width: 168px; max-width: 168px; min-height: 168px; max-height: 168px;">
+                                <div class="cellRow">
+                                    <div class="cell" style="min-width: 168px; max-width: 168px; min-height: 168px; max-height: 168px;">
+                                        <span class="thumb material-icons" style="background-color: var(--theme-color-prime); width: 100%; height: 100%; border-radius: 8px; display: flex; justify-content:center; align-items: center; color: white; font-size: 64px;" c-bind="kind:text:formatWorkCauseKindIcon">schedule</span>
+                                    </div>                                   
+                                </div>
+                            </div>
+                            <div class="cellCol">
+                                <div class="cellRow">
+                                    <div class="cell">
+                                        <span class="cellTitle">요청종류</span>
+                                        <span c-bind="kind:text:formatWorkCauseKind"></span>
+                                    </div>
+                                </div>
+                                <div class="cellRow">
+                                    <div class="cell" >
+                                        <span class="cellTitle">내용</span>
+                                        <span c-bind="kind:text:setSummary"></span>
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="cellRow" c-bind="requestcutcount:requestcutcount:setVisibility">
+                            <div class="cell" >
+                                <span class="cellTitle">컷</span>
+                                <span c-bind="requestcutcount:text:formatNumber"></span>
+                            </div>
+                        </div>
+                        <div class="cellRow" c-bind="updatesetname:updatesetname:setVisibility">
+                            <div class="cell" >
+                                <span class="cellTitle">버전</span>
+                                <span c-bind="updatesetname:text"></span>
+                            </div>
+                        </div>
+                        <div class="cellRow" c-bind="enddate:enddate:setVisibility">
+                            <div class="cell" >
+                                <span class="cellTitle">변경요청 종료일</span>
+                                <span c-bind="enddate:text:formatDateNum"></span>
+                            </div>
+                        </div>
+                        <div class="cellRow">
+                            <div class="cell" >
+                                <span class="cellTitle">코멘트</span>
+                                <span c-bind="comment:text"></span>
+                            </div>
+                        </div>
+                        <div class="cellRow" c-bind="feedback:feedback:setVisibility">
+                            <div class="cell" >
+                                <span class="cellTitle">피드백</span>
+                                <span c-bind="feedback:text"></span>
+                            </div>
+                        </div>
+                        <div class="cellRow">
+                            <div class="cell">
+                                <span class="cellTitle">요청일</span>
+                                <span c-bind="workcausecreatedate:text:formatDateNum"></span>
+                            </div>
+                            <div class="cell">
+                                <span class="cellTitle">승인일</span>
+                                <span c-bind="executedate:text:formatDateNum"></span>
+                            </div>
+                        </div>
+                        <div class="cellRow" c-bind="workcausestatus:workcausestatus:setMemo">
+                            <label class="cell" for="memo">
+                                <span class="cellTitle">피드백</span>
+                                <input type="text" id="memo" name="memo"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>                
+                <div class="rowFlexContainer" style="justify-content: flex-end; gap: 10px;">
+                    <div class="buttonView" role="tm" c-bind="workcausepkey:workcausepkey:submitResultDone">
+                        <span>결과 완료 승인</span>
+                    </div>
+                    <div class="buttonView" role="tm" c-bind="workcausepkey:workcausepkey:submitResultFail">
+                        <span>결과 부분완료 승인</span>
+                    </div>
+                    <div class="buttonView" role="tm" c-bind="workcausepkey:workcausepkey:submitResultReject">
+                        <span>결과 반려</span>
+                    </div>
+                    <div class="buttonView" role="tm" c-bind="workcausepkey:workcausepkey:submitScheduleDone">
+                        <span>종료일 변경 승인</span>
+                    </div>
+                    <div class="buttonView" role="tm" c-bind="workcausepkey:workcausepkey:submitScheduleReject">
+                        <span>종료일 변경 반려</span>
+                    </div>
+                    <div class="buttonView" role="tm" c-bind="workcausepkey:workcausepkey:submitCancelDone">
+                        <span>취소 승인</span>
+                    </div>
+                    <div class="buttonView" role="tm" c-bind="workcausepkey:workcausepkey:submitCancelReject">
+                        <span>취소 반려</span>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    findItems($('.requestFragment').get(0));
+    function showWorkCauseDetail(v, d, e) {        
+         $(e).on('click', function(){
+             $('.requestlist .profileView').removeClass('active');
+             $(this).addClass('active');             
+             bindView($('.requestdetail').get(0), d);             
+             $('.requestdetail').show();
+         });    
+    }
+
+    function setSummary(v, d, e) {            
+        const SUMMARY = {
+            "SCHEDULE" : {
+                DONE : `${d.enddate ? formatDateNum(d.enddate) : ""}로 종료일을 변경하는 요청이 승인되었습니다.`,
+                PENDING : `${d.enddate ? formatDateNum(d.enddate) : ""}로 종료일을 변경하는 요청이 대기중입니다.`,
+                REJECTED : `${d.enddate ? formatDateNum(d.enddate) : ""}로 종료일을 변경하는 요청이 반려되었습니다.`
+            },
+            "CANCEL" : {
+                DONE : `작업 취소 요청이 승인되었습니다.`,
+                PENDING : `작업 취소 요청이 대기중입니다.`,
+                REJECTED : `작업 취소 요청이 반려되었습니다.`
+            },            
+            "RESULT" : {
+                DONE : `${d.updatesetname ? d.updatesetname : "선택되지 않은"}버전의 ${d.requestcutcount ? d.requestcutcount : 0}컷의 작업 결과를 승인하였습니다.`,
+                PENDING : `${d.updatesetname ? d.updatesetname : "선택되지 않은"}버전의 ${d.requestcutcount ? d.requestcutcount : 0}컷의 작업 결과 검토 요청이 대기중입니다.`,
+                REJECTED : `${d.updatesetname ? d.updatesetname : "선택되지 않은"}버전의 ${d.requestcutcount ? d.requestcutcount : 0}컷의 작업 결과를 반려하였습니다.`
+            }
+        };        
+        return SUMMARY[v][d.workcausestatus];
+    }
+
+    function submitResultDone(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(d.kind == "RESULT" && d.workcausestatus == "PENDING") {
+            $(e).show();
+            $(e).on('click', function(){
+                const formdata = { workresultpkey: d.workresultpkey, workpkey: d.workpkey, kind: "A"}
+                formdata.feedback = $('#memo').val();                
+                TMAPI.setWorkResultForWorkCauseStatusToDone(formdata).then(res => { updateCurrentWork('작업 결과를 완료 승인하였습니다.', d.workpkey, "request");}).catch();
+            });
+        }
+        return v;
+    }
+
+    function submitResultFail(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(d.kind == "RESULT" && d.workcausestatus == "PENDING") {
+            $(e).show();
+            $(e).on('click', function(){
+                const formdata = { workresultpkey: d.workresultpkey, workpkey: d.workpkey, kind: "B"}
+                formdata.feedback = $('#memo').val();        
+                TMAPI.setWorkResultForWorkCauseStatusToDone(formdata).then(res => { updateCurrentWork('작업 결과를 완료 승인하였습니다.', d.workpkey, "request");}).catch();
+            });
+        }
+        return v;        
+    }
+
+    function submitResultReject(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(d.kind == "RESULT" && d.workcausestatus == "PENDING") {
+            $(e).show();
+            $(e).on('click', function(){
+                const formdata = { workcausepkey : d.workcausepkey }   
+                formdata.feedback = $('#memo').val();                
+                TMAPI.setWorkResultForWorkCauseStatusToRejected(formdata).then(res => { updateCurrentWork('작업 결과를 반려하였습니다.', d.workpkey, "request");}).catch();
+            });
+        }
+        return v;
+    }
+
+    function submitScheduleDone(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(d.kind == "SCHEDULE" && d.workcausestatus == "PENDING") {
+            $(e).show();
+            $(e).on('click', function(){
+                const formdata = {workschedulepkey: d.workschedulepkey, workpkey : d.workpkey } 
+                formdata.feedback = $('#memo').val();
+                TMAPI.setWorkScheduleForWorkCauseStatusToDone(formdata).then(res => { updateCurrentWork('스케줄 변경 요청이 승인되었습니다.', d.workpkey, "request");}).catch();
+            });
+        }
+        return v;
+    }
+
+    function submitScheduleReject(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(d.kind == "SCHEDULE" && d.workcausestatus == "PENDING") {
+            $(e).show();
+            $(e).on('click', function(){                
+                const formdata = { workcausepkey : v}
+                formdata.feedback = $('#memo').val();      
+                TMAPI.setWorkScheduleForWorkCauseStatusToRejected(formdata).then(res => { updateCurrentWork("스케줄 변경 요청이 반려되었습니다."), d.workpkey, "request";}).catch();
+            });
+        }
+        return v;
+    }
+
+    function submitCancelDone(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(d.kind == "CANCEL" && d.workcausestatus == "PENDING") {
+            $(e).show();
+            $(e).on('click', function(){
+                const formdata = { workcausepkey : v, workpkey : d.workpkey }
+                formdata.feedback = $('#memo').val();      
+                TMAPI.doneCancelRequest(formdata).then(res => { updateCurrentWork("취소요청이 승인되었습니다."), d.workpkey, "request";}).catch();
+            });
+        }
+    }
+
+    function submitCancelReject(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(d.kind == "CANCEL" && d.workcausestatus == "PENDING") {
+            $(e).show();
+            $(e).on('click', function() {
+                const formdata = { workcausepkey : v, workpkey : d.workpkey }
+                formdata.feedback = $('#memo').val();      
+                TMAPI.rejectCancelRequest(formdata).then(res => { updateCurrentWork("취소요청이 반려되었습니다."), d.workpkey, "request";}).catch();
+            });
+        }
+        return v;
+    }
+
+    function setMemo(v, d, e) {
+        $(e).hide();
+        if(currentUser.auth != "tm") { return v; }
+        if(v == "PENDING") { $(e).show()}
+    }
+
+</script>

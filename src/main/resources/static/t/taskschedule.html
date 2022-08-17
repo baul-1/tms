@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/gantt.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <script src="/js/gantt.js"></script>
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="taskmanagement.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">task schedule</div>
+                    </div>
+                    <div class="contentHeaderEndContainer">
+                        <span class="material-icons" onclick="goTaskManagement()">list</span>
+                        <span class="material-icons filtericon" onclick="showGanttFilter(this)">filter_alt</span>                        
+                    </div>
+                </div>
+                <div class="contentMain" style="padding: 0;">
+                    <div class="ganttTarget" style="position: relative;">
+                        <div class="material-icons ganttNav left" style="display: none;" onclick="moveScroll(-10)">chevron_left</div>
+                        <div class="material-icons ganttNav right" style="display: none;" onclick="moveScroll(10)">chevron_right</div>
+                    </div>
+                </div>                
+            </article>
+            <aside>        
+            </aside>
+        </main>
+    </div>
+</body>
+</html>
+
+<script>       
+    const ganttConfig = {
+        option : {
+            days : 40,
+            datewidth : 80,
+            firstdate : "20220401"                           
+        },
+        events : {
+            group : {
+                onclick : onGroupClick
+            },
+            event : {
+                onclick : onEventClick
+            },
+            nav : {
+                scrollstart : onScrollStart,
+                scrollend : onScrollEnd,
+                scroll : onScroll,
+            }
+        },
+        data : {
+            groups : {}
+        }
+    }
+    function runSetup() {
+        findItems(document);
+        setCurrentUser('tm');
+        initFilterData();
+        setListTask();               
+    }
+
+    function initFilterData() {
+        $('.filtericon').get(0).filterdata = {
+            titlepkey : "ALL",
+            episodepkey : "ALL",
+            taskpkey : "ALL",
+            workpkey : "ALL",
+            workerpkey : "ALL",
+            workstatus : "ALL",
+            workreq : "ALL",
+            firstdate : "20220401",
+            lastdate : "20220501"
+        }
+    }
+
+    function setListTask(){
+        TMAPI.listTask().then(data => {
+            data.body.tasklist.forEach(task => {                                            
+                task.startdate = task.taskstartdate;
+                task.enddate = task.taskenddate;
+                task.eventlist = task.worklist;
+                task.eventlist.forEach(event => {
+                    event.taskname = task.taskname;
+                    event.titlename = task.titlename;
+                    event.episodename = task.episodename;
+                    event.kind = task.taskkind;
+                })
+            });
+            currentData = data.body;
+
+            /* gantt */
+            ganttConfig.option.today = currentData.nowdate;            
+            ganttConfig.option.firstdate = getFirstDate(currentData.nowdate);
+            renderGantt();
+            checkParams();
+        });        
+    }
+
+    function renderGantt() {
+        $('.gantt').remove();
+        $('.filtericon').get(0).filterdata.firstdate = ganttConfig.option.firstdate;
+        $('.filtericon').get(0).filterdata.lastdate = getLastDate(ganttConfig.option.firstdate);
+        ganttConfig.data.groups = getFilteredGanttData(currentData.tasklist);
+        const gantt = new Gantt(ganttConfig);            
+        gantt.render($('.ganttTarget').get(0));
+        setScrollCenter();        
+        if(ganttConfig.data.groups.length <= 0) { showToast('스케줄이 없습니다.', 'var(--theme-color-alt-b)')};
+    }
+
+    function getFilteredGanttData(tasklist) {           
+        const filterdata = $('.filtericon').get(0).filterdata;
+        
+        let ret = getCopyObject(tasklist);        
+        ret = ret
+        .filter(task => {return filterdata.titlepkey == "ALL" || filterdata.titlepkey == task.titlepkey})        
+        .filter(task => {return filterdata.episodepkey == "ALL" || filterdata.episodepkey == task.episodepkey})
+        .filter(task => {return filterdata.taskpkey == "ALL" || filterdata.taskpkey == task.taskpkey})
+        ret.forEach(task => {            
+            task.eventlist = task.eventlist
+            .filter(event => {return formatDFS(filterdata.firstdate).getTime() <= formatDFS(event.enddate).getTime() && formatDFS(filterdata.lastdate).getTime() >= formatDFS(event.startdate).getTime() })
+            .filter(event => {return filterdata.workpkey == "ALL" || filterdata.workpkey == event.workpkey})
+            .filter(event => {return filterdata.workerpkey == "ALL" || filterdata.workerpkey == event.workerpkey})
+            .filter(event => {return filterdata.workstatus == "ALL" || filterdata.workstatus == event.status})
+            .filter(event => {return hasWorkRequest(filterdata.workreq, event)})
+        });
+
+
+        ret = ret.filter(task => {            
+            if(task.eventlist.length == 0) {
+                return formatDFS(filterdata.firstdate).getTime() <= formatDFS(task.enddate).getTime() && formatDFS(filterdata.lastdate).getTime() >= formatDFS(task.startdate).getTime()                
+            }
+            return true;
+        });
+
+        if(filterdata.workpkey != "ALL" || filterdata.workerpkey != "ALL" || filterdata.workstatus != "ALL" || filterdata.workreq != "ALL") {
+            ret = ret.filter(task => { return task.eventlist.length > 0});
+        }        
+        return ret;
+    }
+
+    function hasWorkRequest(req, work) {                
+        if(req == "ALL") { return true; }
+        if(work.workcauselist.length > 0 && work.workcauselist.find(cause => cause.workcausestatus == "PENDING")) {return true}
+        return false;
+    }
+
+    function setScrollCenter() {
+        var outer = $('.gantt');
+        var inner = $('.gantt .ganttContainer');
+        outer.scrollLeft((inner.width() - outer.width()) / 2); 
+    }
+
+    function getFirstDate(ds) {
+        let date = formatDFS(ds);        
+        date.setDate(date.getDate() - Math.round(ganttConfig.option.days / 2));
+        return formatDTS(date);
+    }
+
+    function getLastDate(ds) {
+        let date = formatDFS(ds);        
+        date.setDate(date.getDate() + ganttConfig.option.days - 1);
+        return formatDTS(date);
+    }
+
+    function checkParams() {
+        if(getParam("filter") == "Y") {                        
+            currentData.filter = {};
+            currentData.filter.hasfilter = "Y";
+            if(getParam('workerpkey')) {
+                currentData.filter.workerpkey = getParam('workerpkey');
+            }            
+            $('.filtericon').click();
+        }          
+    }
+
+    function onGroupClick(item) {        
+        showAside('../aside/detailtask.html', function(){mapAside(item)});
+    }
+
+    function onEventClick(item) {        
+        item.workname = item.name;
+        showAside('../aside/detailwork.html', function(){mapAside(item)});
+    }
+
+    function onScroll() {        
+        $('.ganttNav').hide();
+    }
+
+    function onScrollStart() {        
+        $('.ganttNav.left').show();
+    }
+
+    function onScrollEnd() {        
+        $('.ganttNav.right').show();
+    }
+
+    function moveScroll(int) {
+        var firstdate = ganttConfig.option.firstdate;
+        var d = formatDFS(firstdate);
+        d.setDate(d.getDate() + int);
+        ganttConfig.option.firstdate = formatDTS(d);        
+        renderGantt();
+    }
+
+    function showGanttFilter(ele) {
+        for(const [key, value] of Object.entries(ele.filterdata)) {
+            if(value != "ALL") { $(ele).addClass('active'); }
+        }                
+        showAside('../aside/filtergantt.html', function(){ mapAside(currentData) });
+    }
+
+    function onShowAside() {
+        $('.ganttTarget').addClass('aside');
+    }
+
+    function onHideAside() {
+        $('.ganttTarget').removeClass('aside');        
+    }
+
+    function onNavShrink() {
+        $('.ganttTarget').addClass('navshrink');
+    }
+
+    function onNavExpand() {
+        $('.ganttTarget').removeClass('navshrink');
+    }    
+
+    function goTaskManagement() {
+        location.href = "taskmanagement.html";
+    }
+
+    function onFilterSubmitClick(filtered) {                
+        $('.filtericon').get(0).filterdata = filtered; 
+        $('.filtericon').removeClass('active');
+        for(const [key, value] of Object.entries(filtered)) {
+            if(value != "ALL") { $('.filtericon').addClass('active'); }
+        }       
+        renderGantt(currentData.tasklist);        
+    }
+
+    function updateUI(msg) {
+        showToast(msg);
+        setListTask();
+    }
+
+</script>

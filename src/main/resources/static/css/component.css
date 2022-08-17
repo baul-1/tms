@@ -1,0 +1,866 @@
+/* ITEMLIST */
+.itemList {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;    
+}
+
+.itemList.small {
+    min-width: 240px;
+    max-width: 240px;
+}
+
+.itemList.medium {
+    min-width: 320px;
+    max-width: 320px;
+}
+
+.itemList .itemListStart {
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between;       
+    min-height: 80px;
+}
+.itemList .itemListEnd {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;    
+}
+
+.itemList .itemListTitle {
+    font-weight: 700;
+}
+
+/* PROFILEVIEW */
+.profileView {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;        
+    border-radius: 4px;
+}
+
+.profileView.active {   
+    background-color: white;
+}
+
+
+.profileView .thumb {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    font-size: 24px;
+    object-fit: cover;
+    color: white;
+}
+
+.profileView .infoContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.profileView .infoContainer .info {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.profileView .infoContainer .info .name {    
+    font-size: .75em;
+    font-weight: 700;
+}
+
+.profileView .infoContainer .info .detail {
+    font-size: .75em;
+    color: #AAAAAA;
+}
+
+.profileView .infoContainer .actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ROWVIEW */
+.rowView {
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-size: .8em;
+    padding: 0 8px;
+    border-radius: 4px;    
+}
+
+.rowView.active {    
+    border: 2px solid var(--theme-color-active);
+}
+
+.rowView.header {
+    border: none;
+    border-bottom: 1px solid white;
+}
+
+.rowView .rowItem {
+    width: fit-content;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 8px;
+}
+
+/* INPUTVIEW */
+.inputView {
+    position: relative;
+    margin-top: 18px;
+}
+
+.inputView label {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    color: #CCCCCC;
+    transition: 0.2s ease-in-out all;
+    text-transform: capitalize;
+    font-size: 12px;
+}
+
+.inputView input[type="text"],
+.inputView input[type="password"],
+.inputView input[type="date"] {
+    width: 100%;
+    font-weight: 700;    
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid var(--theme-color-bg);
+    background-color: transparent;
+}
+
+.inputView input[type="text"]:focus,
+.inputView input[type="password"]:focus,
+.inputView input[type="date"]:focus,
+.inputView input[type="text"]:valid,
+.inputView input[type="password"]:valid,     
+.inputView input[type="date"]:valid {    
+    outline: none;
+    border-color: var(--theme-color-active);
+    border-width: 2px;
+    font-size: 12px;
+}
+
+.inputView input[type="text"]:focus~label,
+.inputView input[type="password"]:focus~label,
+.inputView input[type="date"]:focus~label,
+.inputView input[type="text"]:valid~label,
+.inputView input[type="password"]:valid~label,
+.inputView input[type="date"]:valid~label {
+    top: -10px;
+    font-size: 10px;
+    color: var(--theme-color-active);
+}
+
+/* BUTTONVIEW */
+.buttonView {
+    text-transform: uppercase;
+    width: fit-content;    
+    height: fit-content;    
+    padding: 8px 16px;
+    background-color: var(--theme-color-alt-c);
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* PROPERTYVIEW */
+.propertyView {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;        
+    border-bottom: 1px solid var(--theme-color-bg);    
+    width: 100%;
+    min-height: 64px;    
+}
+
+.propertyView .key {
+    color: var(--theme-color-active);
+    font-size: 10px;
+}
+
+.propertyView .value {
+    font-size: 12px;
+}
+
+/* COLORVIEW */
+.colorView {
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;    
+    font-size: .8em;
+    
+}
+
+.colorView .colorViewStart {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 12px;
+}
+
+.colorView .colorViewEnd {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+    padding: 0 8px;
+    gap: 12px;
+}
+
+.colorView .colorViewStart .colorSample {
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--theme-color-bg);
+}
+
+.colorView .colorViewStart .colorSample .picker {
+    cursor: pointer;
+}
+
+.colorView .colorViewStart .colorInfo {
+    width: 72px;
+}
+
+.colorView .colorViewStart .colorInfo .colorHex > * {
+    text-transform: lowercase;
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 12px;
+}
+
+.colorView .colorViewStart .colorInfo .colorName > * {    
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 12px;
+}
+
+.colorView .colorViewStart .colorCategory select {
+    font-size: 11px;    
+    border: none;
+    outline: none;
+}
+
+.colorView .colorViewEnd .colorStatus {
+    color: var(--theme-color-active);
+    font-weight: 700;
+}
+
+/* SELECTVIEW */
+.selectView {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;    
+    width: 200px;
+}
+
+.selectView .selectViewTitle {
+    font-size: 8px;
+}
+
+.selectView select {
+    width: 100%;
+    background-color: transparent;    
+    border: none;
+    border-bottom: 1px solid white;
+    outline: none;    
+}
+
+/* FRAGMENT */
+
+
+/* PICKERVIEW */
+.pickerView {
+    width: 100%;
+    height: 40px;    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.pickerView .pickerStart {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.pickerView .pickerStart .categoryContainer {
+    width: 100%;
+    height: 100%;    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;    
+}
+
+.pickerView .pickerStart .categoryContainer .category {
+    padding: 2px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.pickerView .pickerStart .categoryContainer .category.active {
+    color: white;
+    background-color: var(--theme-color-active);
+}
+
+.pickerView .pickerEnd {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;    
+}
+
+/* FRAGMENT */
+.fragment {
+    width: 100%;
+    height: 100%;
+}
+
+.fragmentMain {
+    width: 100%;
+    height: 100%;    
+}
+
+.styleFragment {
+    width: 100%;
+    height: 100%;    
+}
+
+.fileViewerFragment {
+    width: 100%;
+    height: 100%;
+}
+
+.fileTreeViewerFragment {
+    width: 100%;
+    height: 100%;
+}
+
+.fileViewerFragment .entrypath .path:not(:first-child)::before {
+    content: " > ";
+}
+
+/* TREEVIEW */
+.treeView {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.treeView .treeItem {
+    width: 100%;
+    height: 40px;    
+    display: flex;
+    flex-direction: row;    
+    font-size: 12px;    
+}
+
+.treeView .treeItem.active {
+    color : var(--theme-color-active);
+}
+
+.treeView .treeItem.UPDATE,
+.treeView .treeItem.ADD {
+    color: var(--theme-color-alt-e);
+}
+
+.treeView .treeItem.DELETE {
+    color: var(--theme-color-alt-b);
+}
+
+.treeView .treeItem .treeItemStart {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.treeView .treeItem .treeItemEnd {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ENTRYVIEW */
+.entryView {
+    width: 120px;
+    height: 160px;
+    cursor: pointer;
+}
+
+.entryView .thumb {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid var(--theme-color-bg);
+    border-right: 2px solid var(--theme-color-bg);    
+    border-radius: 8px;
+}
+
+.entryView:hover .thumb {
+    background-color: var(--theme-color-bg);
+    border: none;
+}
+
+.entryView.active .thumb {
+    border: 2px solid var(--theme-color-active);        
+}
+
+.entryView .thumb .thumbicon {
+    font-size: 48px;
+    color: var(--theme-color-prime);
+}
+
+.entryView .info {
+    width: 100%;
+    height: 50px;   
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;    
+    padding: 4px;
+    position: relative;
+}
+
+.entryView .info > span {
+    width: 100%;
+    font-size: 10px;
+}
+
+/* TOGGLESWITCHVIEW */
+.toggleSwitchView {
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggleSwitchView .toggleSwitchTitle {
+    font-size: 12px;    
+}
+
+.toggleSwitchView .toggleSwitchTitle.active {
+    color: var(--theme-color-active);
+    font-weight: 700;
+}
+
+.toggleSwitchView .switch{
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;     
+}
+
+.toggleSwitchView .switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+.toggleSwitchView .switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--theme-color-prime);
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 9999px;
+  }
+
+.toggleSwitchView .switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 9999px;
+}
+
+.toggleSwitchView .switch input:checked + .slider {    
+    background-color: var(--theme-color-active);
+  }
+  
+.toggleSwitchView .switch input:checked + .slider:before {    
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
+}
+
+
+/* CELLVIEW */
+.cellView {
+    width: 100%;
+    height: 100%;
+    display: flex;    
+    flex-direction: row;
+    gap: 8px;
+    font-size : 12px;
+}
+
+.cellView .cellCol {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cellView .cellCol.req {
+    transition: all ease-in-out 0.5s;
+}
+
+.cellView .cellRow {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;    
+    gap: 8px;
+}
+
+.cellView .cell {
+    width: 100%;
+    min-height: 80px;
+    background-color: white;    
+    cursor: pointer;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 8px; 
+}
+
+.cellView .cell.active {
+    border: 2px solid var(--theme-color-active);
+}
+
+.cellView .cell .itemList .itemListStart {
+    min-height: 0;
+}
+
+.cellView .cell .rowView {
+    padding: 0;
+}
+
+.cellView .cell.view {
+    cursor: default;
+}
+
+.cellView .cell .cellTitle {
+    color: var(--theme-color-active);
+}
+
+.cellView .cell input[type='text'],
+.cellView .cell input[type='month'],
+.cellView .cell input[type='date'] {
+    width: 100%;
+    height: 24px;
+    font-size: 12px;
+    outline: none;
+    border: none;    
+}
+
+
+/* RADIOVIEW */
+.radioView {    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
+    gap: 4px;
+}
+
+.radioView input[type='radio'] {
+    font-size: 10px;
+}
+
+/* PROGRESSVIEW */
+.progressView {
+    position: relative;
+    width: 100%;
+    height: 40px;    
+}
+
+.progressView span.value {
+    position: absolute;
+    top: 13px;
+    left: 8px;    
+    z-index: 2;
+    color: white;
+    font-weight: 700; 
+    font-size: 10px;   
+}
+
+.progressView progress {
+    position: absolute;
+    top: 8px;
+    left: 0;    
+}
+
+/* RANGEVIEW */
+.rangeView {
+    position: relative;
+    width: 100%;
+    height: 40px;    
+}
+
+.rangeView span.range {
+    position: absolute;
+    top: 13px;
+    left: 8px;    
+    z-index: 2;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.rangeView input[type="range"] {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background-size: 10% 100%;
+    background-color: var(--status-color-ing);
+    background-image: linear-gradient(var(--status-color-done) , var(--status-color-done));    
+    background-repeat: no-repeat;
+    border-radius: 9999px;
+    position: absolute;
+    top: 8px;
+    left: 0;
+}
+
+.rangeView input[type="range"]:focus {
+    outline: none;
+}
+
+.rangeView input[type="range"]::-webkit-slider-runnable-track {
+    height: 24px;   
+}
+
+.rangeView input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: #ffffff;
+    cursor: ew-resize;
+    height: 24px;
+    width: 24px;           
+    border-radius: 50px;
+}
+
+/* WORKVIEW */
+.workView {
+    width: 100%;
+    height: 80px;    
+    display: flex;   
+    gap: 10px;
+    flex-direction: row; 
+    border-radius: 4px;   
+}
+
+.workView.active .workInfo {
+    border: 2px solid var(--theme-color-active); 
+}
+
+.workView .workThumb {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+    height: 100%;
+    border-radius: 4px;
+}
+
+.workView .workThumb img {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.workView .workInfo {
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--theme-color-prime);
+}
+
+.workView .workInfo .workRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    width: 100%;
+    height: 50%;    
+}
+
+.workView .workInfo .workRow.episode {
+    max-width: 300px;
+}
+
+.workView .workInfo .workRow.episode span {
+    max-width: 250px;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+/* MODALVIEW */
+.modalView {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    padding: 48px;
+    background-color: rgba(0, 0, 0, .1);
+    color: white;
+}
+
+
+.modalView .modalWrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, .1);
+}
+
+
+.modalView .modalWrap .modalHead {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--theme-color-prime);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;    
+    padding: 0 16px;    
+}
+
+.modalView .modalWrap .modalHead .modalHeadStart {
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+
+.modalView .modalWrap .modalHead .modalHeadStart,
+.modalView .modalWrap .modalHead .modalHeadEnd {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.modalView .modalWrap .modalMain {
+    width: 100%;
+    height: calc(100% - 48px);
+    overflow: hidden;
+    padding: 16px;
+}
+
+.modalView .modalWrap .modalClose {             
+    cursor: pointer;        
+}
+
+.modalView .modalWrap .modalContent {    
+    overflow: auto;    
+    width: 100%;    
+    height: 100%;    
+    background-color: white;
+}
+
+
+
+/* CHARTBOX */
+.chartBox {
+    margin: 10px 0;
+}
+
+/* OVERFLOWCONTAINER */
+.overflowContainer {
+    scroll-behavior: smooth;
+}
+
+
+
+/* SKELETON */
+.skeleton { 
+    background-color: lightgray;
+    animation: skeleton 0.5s infinite;
+}
+
+@keyframes skeleton {
+    0% { background-color: white; }
+    100%{ background-color: #F7F7F7;}
+}

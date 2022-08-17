@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="../js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="overview.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">overview</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="cellView">                        
+                        <div class="cellCol" style="width: 40%;">
+                            <div class="cellRow">
+                                <div class="cellCol req" kind="result">
+                                    <div class="cell view">
+                                        <span class="cellTitle">결과 검토 요청</span>
+                                        <span class="value" c-bind="resultreqlist:text:showReqList"></span>
+                                    </div>
+                                </div>
+                                <div class="cellCol req" kind="schedule">
+                                    <div class="cell view">
+                                        <span class="cellTitle">일정 변경 요청</span>
+                                        <span class="value" c-bind="schedulereqlist:text:showReqList"></span>
+                                    </div>
+                                </div>
+
+                                <div class="cellCol req" kind="deny">
+                                    <div class="cell view">
+                                        <span class="cellTitle">작업 취소 요청</span>
+                                        <span class="value" c-bind="denyreqlist:text:showReqList"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cellRow reqlist" kind="result" style="display: none;">
+                                <div class="cell view">
+                                    <span class="cellTitle">결과 변경 요청 리스트</span>
+                                    <div class="itemList resultreqlist" style="margin-top: 8px;">
+                                        <div class="itemListStart">
+                                            <div class="rowView header" style="border-bottom: 1px solid var(--theme-color-bg);">
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>상태</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 60%;">
+                                                    <span>작업명</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>작업자</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>진행률</span>
+                                                </div>
+                                            </div>       
+                                        </div>
+                                        <div class="itemListEnd">
+                                            <div class="overflowContainer" style="overflow-y: auto; min-height: 160px; max-height: 160px; overflow-x: hidden;">
+                                                <div class="colFlexContainer" c-bind="resultreqlist:list" style="gap: 10px;">
+                                                    <item>
+                                                        <div class="rowView light" c-bind="workpkey:workpkey:goManageWork" style="cursor: pointer;">
+                                                            <div class="rowItem" style="width: 20%">
+                                                                <span c-bind="status:text:formatWorkStatus"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 60%;">
+                                                                <span c-bind="name:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <span c-bind="workername:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <div class="progressView">
+                                                                    <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                                    <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                                </div>
+                                                            </div>
+                                                        </div>                                
+                                                    </item>
+                                                    <emptyitem style="display: none;">
+                                                        <div class="emptyContainer">
+                                                            <div class="msgBox">
+                                                                <span>작업이 없습니다.</span>                                            
+                                                            </div>
+                                                        </div>
+                                                    </emptyitem>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cellRow reqlist" kind="schedule" style="display: none;">
+                                <div class="cell view">
+                                    <span class="cellTitle">일정 변경 요청 리스트</span>
+                                    <div class="itemList schedulereqlist" style="margin-top: 8px;">
+                                        <div class="itemListStart">
+                                            <div class="rowView header" style="border-bottom: 1px solid var(--theme-color-bg);">
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>상태</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 60%;">
+                                                    <span>작업명</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>작업자</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>진행률</span>
+                                                </div>
+                                            </div>       
+                                        </div>
+                                        <div class="itemListEnd">
+                                            <div class="overflowContainer" style="overflow-y: auto; min-height: 160px; max-height: 160px; overflow-x: hidden;">
+                                                <div class="colFlexContainer" c-bind="schedulereqlist:list" style="gap: 10px;">
+                                                    <item>
+                                                        <div class="rowView light" c-bind="workpkey:workpkey:goManageWork" style="cursor: pointer;">
+                                                            <div class="rowItem" style="width: 20%">
+                                                                <span c-bind="status:text:formatWorkStatus"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 60%;">
+                                                                <span c-bind="name:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <span c-bind="workername:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <div class="progressView">
+                                                                    <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                                    <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                                </div>
+                                                            </div>
+                                                        </div>                                
+                                                    </item>
+                                                    <emptyitem style="display: none;">
+                                                        <div class="emptyContainer">
+                                                            <div class="msgBox">
+                                                                <span>작업이 없습니다.</span>                                            
+                                                            </div>
+                                                        </div>
+                                                    </emptyitem>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cellRow reqlist" kind="deny" style="display: none;">
+                                <div class="cell view">
+                                    <span class="cellTitle">작업 취소 요청 리스트</span>
+                                    <div class="itemList cancelreqlist" style="margin-top: 8px;">
+                                        <div class="itemListStart">
+                                            <div class="rowView header" style="border-bottom: 1px solid var(--theme-color-bg);">
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>상태</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 60%;">
+                                                    <span>작업명</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>작업자</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>진행률</span>
+                                                </div>
+                                            </div>       
+                                        </div>
+                                        <div class="itemListEnd">
+                                            <div class="overflowContainer" style="overflow-y: auto; min-height: 160px; max-height: 160px; overflow-x: hidden;">
+                                                <div class="colFlexContainer" c-bind="denyreqlist:list" style="gap: 10px;">
+                                                    <item>
+                                                        <div class="rowView light" c-bind="workpkey:workpkey:goManageWork" style="cursor: pointer;">
+                                                            <div class="rowItem" style="width: 20%">
+                                                                <span c-bind="status:text:formatWorkStatus"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 60%;">
+                                                                <span c-bind="name:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <span c-bind="workername:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <div class="progressView">
+                                                                    <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                                    <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                                </div>
+                                                            </div>
+                                                        </div>                                
+                                                    </item>
+                                                    <emptyitem style="display: none;">
+                                                        <div class="emptyContainer">
+                                                            <div class="msgBox">
+                                                                <span>작업이 없습니다.</span>                                            
+                                                            </div>
+                                                        </div>
+                                                    </emptyitem>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="cellRow">
+                                <div class="cell view">
+                                    <span class="cellTitle">최근작업</span>
+                                    <div class="itemList recentworklist" style="margin-top: 8px;">
+                                        <div class="itemListStart">
+                                            <div class="rowView header" style="border-bottom: 1px solid var(--theme-color-bg);">
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>상태</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 60%;">
+                                                    <span>작업명</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>경과</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>진행률</span>
+                                                </div>
+                                            </div>      
+                                        </div>
+                                        <div class="itemListEnd">
+                                            <div class="overflowContainer recentwork" style="overflow-y: auto; min-height: 570px; max-height: 570px; overflow-x: hidden;">
+                                                <div class="colFlexContainer" c-bind="recentworklist:list" style="gap: 10px;">
+                                                    <item>
+                                                        <div class="rowView light" c-bind="workpkey:workpkey:goManageWork" style="cursor: pointer;">
+                                                            <div class="rowItem" style="width: 20%">
+                                                                <span c-bind="status:text:formatWorkStatus"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 60%;">
+                                                                <span c-bind="name:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <span c-bind="enddate:text:setDuration"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <div class="progressView">
+                                                                    <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                                    <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                                </div>
+                                                            </div>
+                                                        </div>                                
+                                                    </item>
+                                                    <emptyitem style="display: none;">
+                                                        <div class="emptyContainer">
+                                                            <div class="msgBox">
+                                                                <span>작업이 없습니다.</span>                                            
+                                                            </div>
+                                                        </div>
+                                                    </emptyitem>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="cellCol" style="width: 20%;">
+                            
+                            <div class="cellRow">
+                                <div class="cell view">
+                                    <span class="cellTitle">작업자 현황</span>
+                                    <div class="itemList memberlist" style="margin-top: 8px;">
+                                        <div class="itemListStart">
+                                            <div class="rowView header" style="border-bottom: 1px solid var(--theme-color-bg);">
+                                                <div class="rowItem">
+                                                    <span>이름</span>
+                                                </div>
+                                                <div class="rowItem">
+                                                    <span>진행중인 작업</span>
+                                                </div>
+                                            </div>      
+                                        </div>
+                                        <div class="itemListEnd">
+                                            <div class="overflowContainer" style="overflow-y: auto; min-height: 658px; max-height: 658px; overflow-x: hidden;">
+                                                <div class="colFlexContainer" c-bind="memberlist:list" style="gap: 10px;">
+                                                    <item>
+                                                        <div class="rowView light" c-bind="workerpkey:workerpkey:goMember" style="cursor: pointer;">
+                                                            <div class="rowItem">
+                                                                <span c-bind="name:text"></span>
+                                                            </div>
+                                                            <div class="rowItem">
+                                                                <span c-bind="count:text:formatNumber"></span>
+                                                            </div>
+                                                        </div>                                
+                                                    </item>
+                                                    <emptyitem style="display: none;">
+                                                        <div class="emptyContainer">
+                                                            <div class="msgBox">
+                                                                <span>작업이 없습니다.</span>                                            
+                                                            </div>
+                                                        </div>
+                                                    </emptyitem>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                                                        
+                            
+                            
+                        </div>
+                        <div class="cellCol" style="width: 40%;">
+                            <div class="cellRow">
+                                <div class="cell view">
+                                    <span class="cellTitle">태스크 진행률</span>
+                                    <div class="chartBox">
+                                        <canvas id="taskprogress"></canvas>
+                                    </div>                                    
+                                </div>
+                            </div>
+                            <div class="cellRow">
+                                <div class="cell view">
+                                    <span class="cellTitle">작업 우선순위 : 높음</span>        
+                                    <div class="itemList highprioritytasklist" style="margin-top: 8px;">
+                                        <div class="itemListStart">
+                                            <div class="rowView header" style="border-bottom: 1px solid var(--theme-color-bg);">
+                                                <div class="rowItem" style="width: 60%;">
+                                                    <span>작업명</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>종료일</span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span>진행률</span>
+                                                </div>
+                                            </div>      
+                                        </div>
+                                        <div class="itemListEnd">
+                                            <div class="overflowContainer" style="overflow-y: auto; min-height: 270px; max-height: 270px; overflow-x: hidden;">
+                                                <div class="colFlexContainer" c-bind="highprioritytasklist:list" style="gap: 10px;">
+                                                    <item>
+                                                        <div class="rowView light" c-bind="workpkey:workpkey:goManageWork" style="cursor: pointer;">
+                                                            <div class="rowItem" style="width: 60%;">
+                                                                <span c-bind="name:text"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <span c-bind="enddate:text:formatDateNum"></span>
+                                                            </div>
+                                                            <div class="rowItem" style="width: 20%;">
+                                                                <div class="progressView">
+                                                                    <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                                    <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                                </div>
+                                                            </div>
+
+                                                        </div>                                
+                                                    </item>
+                                                    <emptyitem style="display: none;">
+                                                        <div class="emptyContainer">
+                                                            <div class="msgBox">
+                                                                <span>작업이 없습니다.</span>                                            
+                                                            </div>
+                                                        </div>
+                                                    </emptyitem>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                       
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+
+</html>
+
+<script>    
+    
+    function runSetup() {        
+        findItems(document);        
+        setOverview();    
+    }
+    
+    function setOverview() {
+        TMAPI.getBoard().then(data => {            
+            currentData = data.body;                        
+            bindView($('.cellView').get(0), currentData);
+            drawTaskProgreesChart()
+        })
+    }
+
+    function drawTaskProgreesChart(selector) {
+        const canvas = document.getElementById('taskprogress');
+        const ctx = canvas.getContext('2d');  
+        const taskpkeylist = getValueArray(currentData.tasklist, "taskpkey");        
+        const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: getValueArray(currentData.tasklist, "name"),
+            datasets: [{
+                label: '태스크 진행률',
+                data: getValueArray(currentData.tasklist, "progress"),
+                backgroundColor: [getRootStyle('--theme-color-alt-e')],
+                borderWidth: 1,
+                maxBarThickness: 100
+            }]
+        },
+        options: {
+            onClick : function(evt, item) {
+                location.href = 'taskmanagement.html?taskpkey=' + taskpkeylist[item[0].index];                
+            },
+            indexAxis : 'x',
+            scales: {
+                y: {
+                    max: 100,
+                    beginAtZero: true
+                },
+                x : {
+                    ticks : {
+                        font : {
+                            size : 10,
+                            weight : 900
+                        }
+                    }
+                }
+            },
+            plugins : {
+                legend : {
+                    display : false
+                }
+            }                
+        }
+        });
+    }
+
+    function setDuration(v, d, e) {
+        const dateGap = getDateGap(formatDTS(new Date()), v, true);
+        let msg;
+        if(dateGap == 0) { msg = "오늘" ; return msg;}
+        msg = dateGap + "일";
+        return msg;
+    }
+
+    function goManageWork(v, d, e) {
+        $(e).on('click', function(){            
+            location.href = "taskmanagement.html?taskpkey="+ d.taskpkey +"&workpkey=" + v;
+        })
+        return v;
+    }
+
+    function goMember(v, d, e) {
+        $(e).on('click', function(){
+            location.href = "member.html?workerpkey="+ v;
+        });
+        return v;
+    }
+
+    function showReqList(v, d, e) {        
+        if(v != undefined && v.length != 0) {
+                const col = $(e).closest('.cellCol');
+                col.on('click', function() {
+                    if(col.hasClass('active')) {
+                        $('.cellCol.req').css('width', "100%");
+                        $('.cellRow.reqlist').hide();
+                        $('.overflowContainer.recentwork').css('min-height', '570px');
+                        $('.overflowContainer.recentwork').css('max-height', '570px');
+                        col.removeClass('active');
+                    } else {
+                        $('.cellCol.req').removeClass('active');
+                        $('.cellCol.req').css('width', "100%");
+                        col.css('width', '200%');                
+                        $('.cellRow.reqlist').hide();                
+                        $('.cellRow.reqlist[kind="' + col.attr("kind") + '"]').show();
+                        $('.overflowContainer.recentwork').css('min-height', '283px');
+                        $('.overflowContainer.recentwork').css('max-height', '283px');
+                        col.addClass('active');
+                    }
+            });
+            $(e).closest('.cell').addClass('active');                        
+        }
+        return v.length;
+    }
+
+
+    
+</script>

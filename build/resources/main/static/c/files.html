@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="com">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="title.html" auth="com"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">files</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList episodelist" style="min-width: 320px; max-width: 320px;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">에피소드</span>                                                                      
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>에피소드 이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 15%;">
+                                        <span>상태</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" id="episodelist" c-bind="episodelist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <item>
+                                            <div class="rowView light" c-bind="eplisodepkey:eplisodepkey:onEpisodeSelect" style="cursor: pointer;">
+                                                <div class="rowItem">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 15%;">
+                                                    <span c-bind="status:text:formatEpisodeStatus"></span>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <div class="bindmore" bind-id="episodelist" onclick="fetchListEpisode()">
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>에피소드가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList tasklist" style="min-width: 320px; max-width: 320px; display: none;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">태스크</span>                                                                      
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>태스크 이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 15%;">
+                                        <span>상태</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" c-bind="tasklist:list" style="gap: 10px;">
+                                        <item>
+                                            <div class="rowView light" c-bind="taskpkey:taskpkey:onTaskSelect" style="cursor: pointer;">
+                                                <div class="rowItem">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 15%;">
+                                                    <span c-bind="status:text:formatTaskStatus"></span>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>태스크가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="fragment fileviewer" >
+                            <div class="rowFlexContainer" style="gap: 16px;">
+
+                                <div class="itemList entrylist"> 
+                                    <div class="itemListStart">
+                                        <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                            <span class="itemListTitle">태스크</span>                        
+                                        </div>                
+                                        <div class="rowView header">                                                
+                                            <div class="rowItem">태스크 이름</div>
+                                        </div>                    
+                                    </div>
+                                    <div class="itemListEnd">
+                                        <div class="fragement fileviewer" loadsrc="../fragment/taskfileviewer.html" kind="edit" style="display: none;">
+                                        </div>
+                                    </div>
+                                </div>                    
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+</html>
+
+<script>    
+    function runSetup() {
+        findItems(document);                
+        fetchListEpisode();
+    }
+
+    function fetchListEpisode() {
+        const listname = "episodelist"
+        const config = {
+            titlepkey : getParam('titlepkey'),
+            start : getListStart(listname),
+            limit : getListLimit(listname)
+        }
+        COMAPI.listEpisodeAll(config).then(data => {            
+            bindView(document.querySelector('.' + listname), data.body);    
+            setBindMore(data.body.next, listname);
+        });
+    }    
+
+    function onEpisodeSelect(v, d, e) {
+        $(e).on('click', function() {
+            $('.episodelist .rowView').removeClass('active');
+            $(e).addClass('active');
+            clearItems('.tasklist');
+            hideAside();
+            $('.fileviewer').hide();
+            $('.tasklist').show();
+            bindView($('.tasklist').get(0), {tasklist : d.tasklist});
+        });              
+        return v;
+    }
+
+    function onTaskSelect(v, d, e) {
+        $(e).on('click', function(){            
+            const data = d;
+            COMAPI.listTaskEntry({taskpkey : v}).then(data => { 
+                $('.fileviewer').show();
+                $('.tasklist .rowView').removeClass('active');
+                $(e).addClass('active');
+                data.body.taskentrylist = formatEntry(data.body.taskentrylist);                                               
+                d.entrylist = getTreeFromArray(data.body.taskentrylist, -1);
+                $('.path').remove();
+                updateFileViewer(d);
+            });
+        })
+        return v;
+    }
+
+    function formatEntry(list) {        
+        list.forEach(item => { item.entrypkey = item.taskentrypkey;});     
+        return list;
+    }
+
+    function onEntryViewClick(v, d, e) {
+        $(e).on('click', function() {
+            showAside('../aside/detailentry.html', function(){ mapAside(d) });
+        });
+        if(d.isfile == "Y") { 
+            $(e).on('dblclick', function() {
+                downloadTaskFile(v);
+            });   
+        } else {
+            $(e).on('dblclick', function(){                
+                updateFileViewer(d);
+            });
+        }  
+        return v;
+    }
+
+    function onDownloadClick(v, d, e) {
+        $(e).on('click', function(){
+            if(d.isfile == "Y") {
+                downloadTaskFile(v);
+            } else {
+                downloadTaskFolder(v);
+            }
+        })        
+        return v;
+    }
+
+    function onDownloadTaskEntryAll(taskpkey) {        
+        downloadTaskEntryAll(taskpkey);
+    }
+        
+</script>

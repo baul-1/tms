@@ -1,0 +1,75 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">작업 필터</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">  
+        <div class="asideContent">
+            <div class="propertyView workerfilterlist">
+                <span class="key">작업자</span>
+                <select name="workerpkey" id="workerfilter" c-bind="workerfilterlist:listtemplete" c-tag="c-item" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="workername:option, workerpkey:value"></option>
+                </select>                
+            </div>            
+            <div class="propertyView statusfilterlist">
+                <span class="key">상태</span>
+                <select name="status" id="statusfilter" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option value="REG">수락대기</option>
+                    <option value="ACCEPT">수락</option>
+                    <option value="ING">진행</option>
+                    <option value="FAIL">부분완료</option>
+                    <option value="CANCEL">취소</option>
+                    <option value="DONE">완료</option>
+                </select>                
+            </div>
+            <div class="propertyView priorityfilterlist">
+                <span class="key">우선순위</span>
+                <select name="priority" id="priorityfilter" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option value="100">낮음</option>
+                    <option value="200">보통</option>
+                    <option value="300">높음</option>
+                </select>                
+            </div>
+            <div class="propertyView workreqfilterlist">
+                <span class="key">요청</span>
+                <select name="workreq" id="workreqfilter" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option value="Y">요청있음</option>
+                </select>                
+            </div>            
+        </div>              
+        <div class="asideFooter">
+            <div class="buttonView workfilterresetbutton" onclick="resetWorkFilter();">
+                <span>초기화</span>
+            </div>
+            <div class="buttonView workfiltersubmitbutton" onclick="submitWorkFilter();">
+                <span>적용</span>
+            </div>       
+        </div>
+    </div>
+</div>
+<script>
+    function mapAside(d) {        
+        $('.asideView').get(0).adata = d;        
+        const data = d;
+        data.workerfilterlist = getUniqueList(d.selectedtask.worklist, "workerpkey");                    
+        bindView($('.asideView').get(0), data);
+        setFilterData($('.work.filtericon').get(0).filterdata);
+    }
+
+    function setFilterData(filterdata) {                     
+        setFilteredIndex("workerpkey", "workerfilter", filterdata);        
+    }
+
+    function resetWorkFilter() {
+        $('.asideView select').each((idx, ele) => { ele.selectedIndex = 0; });
+    }
+
+    function submitWorkFilter() {
+        const filtered = getDataFrom('.asideView');
+        onWorkFilterSubmitClick(filtered);        
+    }
+</script>

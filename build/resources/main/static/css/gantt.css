@@ -1,0 +1,255 @@
+.ganttTarget.aside .gantt {
+    width: calc(100vw - 640px);
+}
+.ganttTarget.navshrink .gantt {
+    width: calc(100vw - 64px);
+}
+.ganttTarget.aside.navshrink .gantt {
+    width: calc(100vw - 464px);
+}
+
+.ganttTarget .ganttNav {
+    position: absolute;
+    cursor: pointer;
+    z-index: 99;
+    width: 30px;
+    height: 30px;    
+    background-color: var(--theme-color-prime);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px;
+}
+
+.ganttTarget .ganttNav.left {
+    top: 50%;
+    left: 25px;
+    transform: translate(0, -50%);
+}
+
+.ganttTarget .ganttNav.right {
+    top: 50%;
+    right: 25px;
+    transform: translate(0, -50%);
+}
+
+.gantt {
+    width: calc(100vw - 240px);
+    height: calc(100vh - 88px);
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;    
+}
+
+.ganttContainer {    
+    height: 100%;
+}
+
+.gantt .ganttHeader {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    width: 100%;
+    height: 40px;    
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid var(--theme-color-bg);
+}
+
+.gantt .ganttHeader .ganttDate {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    font-size: 10px;   
+}
+
+.gantt .ganttHeader .ganttDate.SUN {    
+    color: var(--theme-color-alt-c);
+}
+
+.gantt .ganttHeader .ganttDate.SAT {
+    color: var(--theme-color-alt-e);
+}
+
+.gantt .ganttHeader .ganttDate:nth-child(odd) {
+    background-color: white;
+}
+
+.gantt .ganttHeader .ganttDate:nth-child(even) {
+    background-color: white;
+}
+
+.gantt .ganttMain {
+    position: relative;
+    width: 100%;     
+    height: 800px;
+    overflow-y: auto;     
+    overflow-x: hidden;     
+}
+
+.gantt .ganttMain .ganttBase {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;    
+    display: flex;
+    flex-direction: row;
+}
+
+.gantt .ganttMain .ganttBase .ganttDivider {
+    width: 100%;
+    min-height: calc(100vh - 132px);
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+.gantt .ganttMain .ganttBase .ganttDivider:nth-child(odd) {
+    background-color: white;
+}
+
+.gantt .ganttMain .ganttBase .ganttDivider:nth-child(even) {
+    background-color: var(--theme-color-almost-white);
+}
+
+.gantt .ganttMain .ganttBase .ganttDivider.TODAY {
+    background-color: var(--theme-color-alt-b);
+}
+
+.gantt .ganttMain .ganttBody {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2; 
+    height: fit-content;   
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 40px;
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttGroupContainer .ganttGroupInfo {    
+    width: inherit;
+    height: 40px;    
+    background-size: 0% 100%;
+    background-image: linear-gradient(var(--status-color-done) , var(--status-color-done));
+    background-color: var(--status-color-ing);
+    background-repeat: no-repeat;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px ;
+
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttGroupContainer .ganttGroupInfo span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttGroupContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;    
+    background-color: #0695e73f;
+    font-size: 8px;    
+    color: white;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;      
+    border-radius: 8px;
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttGroupExtendedContainer {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.05);
+    width: 100%;
+    height: 100%;    
+    border-radius: 8px;
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar {
+    background-size: 0% 100%;
+    background-image: linear-gradient(var(--status-color-done) , var(--status-color-done));
+    background-color: var(--status-color-ing);
+    background-repeat: no-repeat;
+    border-radius: 9999px;
+    font-size: 8px;
+    padding: 4px 12px;    
+    color: white;
+    z-index: 2;
+    margin: 8px 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;    
+    align-items: center;
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar.DONE {
+    background-image: linear-gradient(var(--status-color-done) , var(--status-color-done));
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar.FAIL {
+    background-image: linear-gradient(var(--status-color-fail) , var(--status-color-fail));
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar.CANCEL {
+    background-image: linear-gradient(var(--status-color-cancel) , var(--status-color-cancel));
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar.REG {
+    background-color: var(--status-color-reg);
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar.ACCEPT {
+    background-color: var(--status-color-accept);
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar.ING {
+    background-color: var(--status-color-ing);
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar.req {
+    border: 3px solid var(--theme-color-alt-b);
+    
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar:hover {
+    transform: scale(1.05);   
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar .info {
+    width: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar .info .infoReq {    
+    font-size: 12px;
+}
+
+.gantt .ganttMain .ganttBody .ganttGroup .ganttEventBar:first-child {
+    margin-top: 50px;
+}

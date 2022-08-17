@@ -1,0 +1,38 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">캐릭터 수정</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">    
+        <div class="asideContent">
+            <img src="../img/noimage.jpg" name="thumb" c-bind="thumb:src:getImage, thumb:srca" class="imageSelector" alt="img" onclick="selectFile(this)" onerror="this.src='../img/noimage.jpg'">
+            <div class="inputView">
+                <input id="name" name="name" type="text" c-bind="name:value" required>
+                <label for="name">캐릭터 이름</label>
+            </div>
+        </div>    
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitModifyCharacter()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitModifyCharacter() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.characterpkey = $('.asideView').get(0).adata.characterpkey;
+        if(formdata.name.trim() == "") { showToast("캐릭터 이름을 입력하세요"); return; }  
+        console.log(formdata);      
+        COMAPI.modifyCharacter(formdata).then(res => {
+            if(res.head.status != "error") { updateUI("캐릭터가 변경되었습니다."); }
+            console.log(res);
+        }).catch(err => {alert(err)});
+    }
+
+    function mapAside(d) {
+        console.log(d);
+        $('.asideView').get(0).adata = d;        
+        bindView($('.asideView').get(0), d);        
+    }
+</script>

@@ -1,0 +1,142 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">스타일 선택</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">    
+        <div class="asideContent">
+
+            <div class="itemList characterlist">
+                <div class="itemListStart">
+                    <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                        <span class="itemListTitle">캐릭터</span>                                                                
+                    </div>                                                      
+                </div>
+                <div class="itemListEnd">
+                    <div class="overflowContainer" style="max-height: 730px; overflow-y: auto;">
+                        <div class="colFlexContainer" id="characterlist" c-bind="characterlist:list" style="gap: 10px;" listidx="0" step="10">
+                            <item>
+                                <div class="profileView" c-bind="characterpkey:characterpkey:showCharacterStyle" style="cursor: pointer;">
+                                    <div class="wrap">
+                                        <img class="thumb material-icons" c-bind="thumb:src:getImage" onerror="this.src='/img/noimage.jpg'"></img>
+                                    </div>
+                                    <div class="infoContainer">
+                                        <div class="info">
+                                            <span class="name" c-bind="name:text"></span>
+                                            <div class="detail">
+                                                <span class="episodecount" c-bind="stylelist:text:formatLength, characterpkey:characterpkey"></span>
+                                                <span>styles</span>
+                                            </div>
+                                        </div>
+                                        <div class="actions">
+                                            
+                                        </div>
+                                    </div>
+                                </div> 
+                            </item>
+                            <div class="bindmore" bind-id="characterlist" onclick="showMoreList(this)">
+                                <span class="material-icons">expand_more</span>
+                            </div>
+                            <emptyitem style="display: none;">
+                                <div class="emptyContainer">
+                                    <div class="msgBox">
+                                        <span>캐릭터가 없습니다.</span>                                            
+                                    </div>
+                                </div>
+                            </emptyitem>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="itemList stylelist" style="display: none;">
+                <div class="itemListStart">
+                    <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                        <span class="itemListTitle">스타일</span>                                                                
+                    </div>                                                      
+                </div>
+                <div class="itemListEnd">
+                    <div class="overflowContainer" style="max-height: 730px; overflow-y: auto;">
+                        <div class="colFlexContainer" id="detailstylelist" c-bind="stylelist:list" style="gap: 10px;" listidx="0" step="10">
+                            <item>
+                                <div class="profileView"  c-bind="characterstylepkey:characterstylepkey:selectStyle" style="cursor: pointer;">
+                                    <div class="wrap">
+                                        <img class="thumb material-icons" c-bind="imagesrc:src:getImage" onerror="this.src='/img/noimage.jpg'"></img>
+                                    </div>
+                                    <div class="infoContainer">
+                                        <div class="info">
+                                            <span class="name" c-bind="name:text"></span>
+                                            <div class="detail">
+                                                <span>version</span>
+                                                <span class="episodecount" c-bind="version:text, characterpkey:characterpkey"></span>                                                
+                                            </div>
+                                        </div>
+                                        <div class="actions">
+                                            <span class="material-icons">add</span>                          
+                                        </div>
+                                    </div>
+                                </div> 
+                            </item>
+                            <div class="bindmore" bind-id="detailstylelist" onclick="showMoreList(this)">
+                                <span class="material-icons">expand_more</span>
+                            </div>
+                            <emptyitem style="display: none;">
+                                <div class="emptyContainer">
+                                    <div class="msgBox">
+                                        <span>스타일이 없습니다.</span>                                            
+                                    </div>
+                                </div>
+                            </emptyitem>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>    
+        <div class="asideFooter">
+            <div class="buttonView"  style="display: none;" onclick="showCharacterList()">
+                <span>캐릭터로 돌아가기</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function mapAside(d) {
+        findItems($('.asideView').get(0));        
+        $('.asideView').get(0).adata = d;
+        setListCompanyCharacterStyle()
+    }
+
+    function setListCompanyCharacterStyle() {
+        TMAPI.listCompanyCharacterStyle().then(data => {            
+            console.log(data);
+            bindView($('.asideView .characterlist').get(0), data.body);
+        })
+    }
+
+    function showCharacterStyle(v, d, e) {
+        $(e).on('click', function(){
+            $('.asideView .characterlist').hide();
+            $('.asideView .stylelist').show();
+            $('.asideView .asideFooter .buttonView').show();
+            clearItems('.asideView .stylelist');
+            bindView($('.asideView .stylelist').get(0), d);
+        });
+        return v;
+    }
+
+    function selectStyle(v, d, e) {
+        $(e).on('click', function(){
+            TMAPI.addWorkCharacterStyleFromCompanyCharacter({workpkey : $('.asideView').get(0).adata.workpkey, characterstylepkey: v}).then(data => {                            
+                updateCurrentWork('스타일이 추가되었습니다.', $('.asideView').get(0).adata.workpkey, "style");
+            })
+        });
+        return v;
+    }
+
+    function showCharacterList() {
+        $('.asideView .stylelist').hide();
+        $('.asideView .characterlist').show();
+        $('.asideView .asideFooter .buttonView').hide();
+    }
+</script>

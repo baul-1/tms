@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>    
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="taskmanagement.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">create work</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList tasklist" style="min-width: 320px; max-width: 320px;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">태스크</span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem" >
+                                        <span>태스크 이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>종류</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 210px);">
+                                    <div class="colFlexContainer" c-bind="tasklist:list" style="gap: 10px;">
+                                        <item>
+                                            <div class="rowView light" c-bind="taskpkey:taskpkey:selectTask" style="cursor: pointer;">
+                                                <div class="rowItem">
+                                                    <span c-bind="taskname:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span c-bind="taskkind:text:formatTaskKind"></span>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>태스크가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList workform" style="display: none;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">작업</span>
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>새 작업</span>
+                                    </div>                                
+                                </div>                                                               
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="cellView">
+                                    <div class="cellCol"  style="min-width: 420px; max-width: 420px;">
+                                        <div class="cellRow">
+                                            <label class="cell" for="workname">
+                                                <span class="cellTitle">작업명</span>
+                                                <input type="text" name="name" id="workname" placeholder="작업명을 입력하세요">
+                                            </label>
+                                        </div>
+                                        <div class="cellRow">
+                                            <div class="cell view">
+                                                <span class="cellTitle">태스크</span>
+                                                <div class="path">
+                                                    <span class="task" name="taskpkey">태스크를 선택해주세요</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cellRow">
+                                            <div class="cell view" for="workstartdate">
+                                                <span class="cellTitle">태스크 시작일</span>
+                                                <span class="taskstartdate">--</span>
+                                            </div>
+                                            <div class="cell view" for="workenddate">
+                                                <span class="cellTitle">태스크 종료일</span>
+                                                <span class="taskenddate">--</span>
+                                            </div>
+                                        </div>
+                                        <div class="cellRow">
+                                            <div class="cell" onclick="showMemberList()">
+                                                <span class="cellTitle">작업자</span>
+                                                <span class="worker" name="workerpkey">작업자를 선택해주세요</span>
+                                            </div>
+                                        </div>
+                                        <div class="cellRow">
+                                            <div class="cell">
+                                                <span class="cellTitle">우선순위</span>
+                                                <div class="wrap" style="display: flex; flex-direction: row; gap: 16px;">
+                                                    <div class="radioView">                                                
+                                                        <label for="priority100">낮음</label>
+                                                        <input type="radio" name="priority" id="priority100" value="100" >
+                                                    </div>
+                                                    <div class="radioView">                                                
+                                                        <label for="priority200">보통</label>
+                                                        <input type="radio" name="priority" id="priority200" value="200" checked>
+                                                    </div>
+                                                    <div class="radioView">                                                
+                                                        <label for="priority300">높음</label>
+                                                        <input type="radio" name="priority" id="priority300" value="300">
+                                                    </div>
+                                                </div>                                            
+                                            </div>
+                                        </div>
+                                        <div class="cellRow">
+                                            <label class="cell" for="workstartdate">
+                                                <span class="cellTitle">작업 시작일</span>
+                                                <input type="date" name="startdate" id="workstartdate">
+                                            </label>
+                                            <label class="cell" for="workenddate">
+                                                <span class="cellTitle">작업 종료일</span>
+                                                <input type="date" name="enddate" id="workenddate">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="cellCol">
+                                        <div class="cellRow" style="height: 100%;">
+                                            <div class="cell view"> 
+                                                <span class="cellTitle">파일</span>
+                                                <div class="overflowContainer" style="min-height: 469px; max-height: 469px; width: 100%; overflow-x: auto;">
+                                                    <div class="fragment fileselector" loadsrc="../fragment/filetreeselector.html"></div>
+                                                </div>                                                
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                <div class="rowFlexContainer" style="justify-content: flex-end;">
+                                    <div class="buttonView" onclick="submitCreateWork()">
+                                        <span>확인</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+</html>
+
+<script>
+    function runSetup() {
+        findItems(document);
+        setListTask();
+    }
+
+    function setListTask() {
+        TMAPI.listTask().then(data => {            
+            data.body.tasklist = data.body.tasklist.filter(task => { return task.taskstatus != "DONE"});
+            bindView($('.tasklist')[0], data.body);
+            $('.tasklist .rowView[taskpkey="' + getParam('taskpkey') + '"]').click() ;
+            $('.workform').show();
+        });        
+    }
+
+
+    function selectTask(v, d, e) {
+        $(e).on('click', function(){
+            $('.tasklist .rowView').removeClass('active');
+            $(e).addClass('active');
+            $('.path .task').attr('taskpkey', v);
+            $('.path .task').text(d.taskname);
+            $('.taskstartdate').text(formatDateNum(d.taskstartdate));
+            $('.taskenddate').text(formatDateNum(d.taskenddate));
+            $('#workstartdate').val(formatDateNum(d.taskstartdate));
+            $('#workname').val(`작업 ${d.worklist.length + 1}`);
+        });
+        return v;
+    }
+
+    function showMemberList() {
+        TMAPI.listMember().then(data => {            
+            showAside('../aside/selectmember.html', function(){ mapAside(data.body)});
+        });        
+    }
+
+    function onSelectMember(v, d, e) {    
+        hideAside();          
+        $('.worker').attr('workerpkey', d.workerpkey);
+        $('.worker').text(d.name);        
+    }
+
+    function submitCreateWork() {
+        const workdata = getDataFrom('.workform');             
+        if(workdata.startdate) { workdata.startdate = workdata.startdate.replace(/-/g, ""); }
+        if(workdata.enddate) { workdata.enddate = workdata.enddate.replace(/-/g, ""); }        
+        if(validateForm(workdata)) { sendFileMetaData(workdata); }        
+    }
+
+    function validateForm(data) {        
+        if(!isValid(data.name.trim(), "empty")) { showToast("작업명을 입력해주세요"); return false; };
+        if(!isValid(data.taskpkey, "empty")) { showToast("태스크를 선택해주세요"); return false; };
+        if(!isValid(data.workerpkey, "empty")) { showToast("작업자를 선택해주세요"); return false; };
+        if(!isValid(data.startdate, "empty")) { showToast("시작일을 선택해주세요"); return false; };
+        if(!isValid(data.enddate, "empty")) { showToast("종료일을 선택해주세요"); return false; };        
+        if(!isValid(data.startdate, "<=", formatDTS(new Date()))) { showToast("시작일을 오늘 이후로 선택해주세요"); return false; };
+        if(!isValid(data.enddate, "<", data.startdate)) { showToast("종료일을 시작일 이후로 선택해주세요."); return false; };
+        return true;
+    }
+
+    function sendFileMetaData(data) {
+        const treeItems = document.querySelectorAll('.fileTreeSelectorViewerFragment .treeItem');
+        const entrylist = [];
+        const fileEntries = [];
+        treeItems.forEach(item => {
+            var obj = {}
+            obj.name = item.binddata.name;
+            obj.entrynum = item.binddata.entrynum;
+            obj.parentnum = item.binddata.parentnum;
+            obj.isfile = item.binddata.isfile;
+            obj.size = 0;
+            obj.modifydate = 0;
+            if(item.binddata.isfile == "Y") {  
+                fileEntries.push({entrynum : item.binddata.entrynum, entry : item.binddata.entry });
+                obj.size = item.binddata.size;
+                obj.modifydate = item.binddata.modifydate;
+            }
+            entrylist.push(obj);
+        });
+        data.entrylist = JSON.stringify(entrylist);
+        
+        TMAPI.addWork(data).then(res => {              
+            if(res.body.entrylist.length <= 0) {checkUploadDone(res.body.workpkey); return; }
+            uploadEntries(res.body, fileEntries);            
+        }).catch();
+    }
+
+    function uploadEntries(res, fileEntries) {
+        var entries = fileEntries;
+        var totalcnt = entries.length;
+        var done = function(workpkey) {
+            totalcnt = totalcnt - 1;
+            if(totalcnt == 0) { checkUploadDone(workpkey); }
+        }
+        if(totalcnt == 0) { checkUploadDone(workpkey); return; }
+        entries.forEach(entry => {
+            res.entrylist.forEach(resent => {
+                if(entry.entrynum == parseInt(resent.entrynum)) {
+                    entry.uploadtoken = resent.uploadtoken;
+                    uploadEntry(entry, done);
+                }
+            });
+            entry.workpkey = res.workpkey;
+        });
+    } 
+
+    function uploadEntry(entry, uploadDone) {        
+        var progressfn = (entrynum, per) => {
+            let view = $('.fileTreeSelectorViewerFragment .treeItem[entrynum="' + entrynum + '"] .progressView');
+            view.show();
+            $('progress' ,view).val(per);
+        }
+        var retfn = entrynum => {
+            let target = $('.fileTreeSelectorViewerFragment .treeItem[entrynum="' + entrynum + '"] .progressView');            
+            uploadDone(entry.workpkey);
+        }
+        entry.entry.file(file => {
+            sendFileEntry(file, progressfn, retfn, entry.uploadtoken, entry.entrynum, "/uploadFileEntry.json");
+        })        
+        
+    }
+
+    function checkUploadDone(workpkey) {
+        TMAPI.checkUploadDone({workpkey : workpkey, kind : "tm"}).then(res => {                
+            if(res.body.result=="done") { 
+                alert('작업이 생성되었습니다.');
+                location.href = "taskmanagement.html?taskpkey=" + $('.tasklist .rowView.active').attr('taskpkey') + "&workpkey=" + workpkey;
+             }
+            else { alert(res.body.result) }
+        }).catch(e => {});
+    }
+
+</script>

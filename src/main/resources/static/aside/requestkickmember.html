@@ -1,0 +1,34 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">맴버 탈퇴요청</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <span class="msg"></span>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitRequestKickMember()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitRequestKickMember() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.workerpkey = $('.asideView').get(0).adata.workerpkey;             
+        TMAPI.setMemberStatusToReqKick(formdata).then(res => {
+            if(res.body.RESULT == "WORKING") {
+                showToast('진행중인 작업이 있어 탈퇴를 요청할 수 없습니다.');
+                return;
+            }
+            updateUI("작업자의 탈퇴를 요청하였습니다.");
+        }).catch();
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;
+        $('.asideView .msg').text('관리자에게 ' + d.name + ' 맴버를 탈퇴 요청하겠습니까?')
+    }
+</script>

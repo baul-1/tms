@@ -1,0 +1,86 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">태스크 필터</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">  
+        <div class="asideContent">
+            <div class="propertyView titlefilterlist">
+                <span class="key">타이틀</span>
+                <select name="titlepkey" id="titlefilter" c-bind="titlefilterlist:listtemplete" c-tag="c-item" style="font-size: 12px;" onchange="onTitleFilterChanged(this)">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="titlename:option, titlepkey:value"></option>
+                </select>                
+            </div>
+            <div class="propertyView episodefilterlist">
+                <span class="key">에피소드</span>
+                <select name="episodepkey" id="episodefilter" c-bind="episodefilterlist:listtemplete" c-tag="c-item" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="episodename:option, episodepkey:value"></option>
+                </select>                
+            </div>
+            <div class="propertyView statusfilterlist">
+                <span class="key">상태</span>
+                <select name="taskstatus" id="statusfilter" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option value="REG">준비</option>
+                    <option value="ING">진행</option>
+                    <option value="DONE">완료</option>
+                </select>                
+            </div>
+            <div class="propertyView statusfilterlist">
+                <span class="key">종류</span>
+                <select name="taskkind" id="kindfilter" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option value="A">밑색</option>
+                    <option value="B">채색</option>
+                    <option value="ETC">기타</option>
+                </select>                
+            </div>            
+        </div>              
+        <div class="asideFooter">
+            <div class="buttonView taskfilterresetbutton" onclick="resetTaskFilter();">
+                <span>초기화</span>
+            </div>
+            <div class="buttonView taskfiltersubmitbutton" onclick="submitTaskFilter();">
+                <span>적용</span>
+            </div>       
+        </div>
+    </div>
+</div>
+<script>
+    function mapAside(d) {        
+        $('.asideView').get(0).adata = d;        
+        const data = d;
+        data.titlefilterlist = getUniqueList(d.tasklist, "titlepkey");        
+        data.episodefilterlist = getUniqueList(d.tasklist, "episodepkey");                
+        bindView($('.asideView').get(0), data);
+        setFilterData($('.task.filtericon').get(0).filterdata);
+    }
+
+    function setFilterData(filterdata) {                     
+        setFilteredIndex("titlepkey", "titlefilter", filterdata);
+        setFilteredIndex("episodepkey", "episodefilter", filterdata);
+        $('.taskfiltersubmitbutton').click();        
+    }
+    
+
+    function onTitleFilterChanged(ele) {
+        const selectedTitlepkey = ele.value;        
+        let epilist = getUniqueList($('.asideView').get(0).adata.tasklist, "episodepkey");                
+        if(selectedTitlepkey != "ALL") {
+            epilist = epilist.filter(epi => { return epi.titlepkey == selectedTitlepkey });             
+        }                  
+        clearOptions('#episodefilter');                               
+        bindView($('.episodefilterlist').get(0), { episodefilterlist : epilist });                
+    }
+
+    function resetTaskFilter() {
+        $('.asideView select').each((idx, ele) => { ele.selectedIndex = 0; });
+    }
+
+    function submitTaskFilter() {
+        const filtered = getDataFrom('.asideView');
+        onTaskFilterSubmitClick(filtered);        
+    }
+</script>

@@ -1,0 +1,50 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">팀 수정</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">        
+        <div class="asideContent">
+            <div class="inputView">
+                <input id="name" name="name" type="text" c-bind="name:value" required>
+                <label for="name">팀 이름</label>
+            </div>
+            <div class="inputView">
+                <input id="tmid" name="tmid" type="text" c-bind="tmid:value" required>
+                <label for="tmid">아이디</label>
+            </div>
+            <div class="inputView">
+                <input id="tmpw" name="tmpw" type="password" required>
+                <label for="tmpw">패스워드</label>
+            </div>
+            <div class="inputView">
+                <input id="tmpw2" name="tmpw2" type="password" required>
+                <label for="tmpw2">패스워드 확인</label>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitModifyTeam()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitModifyTeam() {
+        const formdata = getDataFrom('.asideView');                    
+        formdata.taskmanagerpkey = $('.asideView').get(0).adata.taskmanagerpkey;
+        if(formdata.name.trim() == "") { showToast("팀 이름을 입력하세요"); return;}
+        if(formdata.tmid.trim() == "") { showToast("아이디를 입력하세요"); return;}
+        if(formdata.tmpw.trim() == "") { showToast("패스워드를 입력하세요"); return;}
+        if(formdata.tmpw.trim() != formdata.tmpw2.trim()) { showToast("패스워드가 일치하지 않습니다."); return;}        
+        COMAPI.modifyTaskManager(formdata).then(res => {
+            if (res.head.status == "error") { showToast(res.head.msg); return;}
+            updateUI('팀이 변경되었습니다.');
+        }).catch();
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;        
+        bindView($('.asideView').get(0), $('.asideView').get(0).adata); 
+    }
+</script>

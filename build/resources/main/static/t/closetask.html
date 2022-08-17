@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="taskmanagement.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">CLOSE TASK</div>                        
+                    </div>
+                    <div class="contentHeaderEndContainer">                                            
+                    </div>
+                </div>
+                <div class="contentMain">     
+                    <div class="colFlexContainer" style="gap: 16px">
+                        <div class="wrap">
+                            <div class="cellView">
+                                <div class="cellCol" style="width: 20%;">
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">타이틀</span>
+                                            <span c-bind="titlename:text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">에피소드</span>
+                                            <span c-bind="episodename:text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">태스크 이름</span>
+                                            <span c-bind="taskname:text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">태스크 종류</span>
+                                            <span c-bind="taskkind:text:formatTaskKind"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">상태</span>
+                                            <span c-bind="taskstatus:text:formatTaskStatus"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">작업개수</span>
+                                            <span c-bind="worklist:text:formatLength"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">시작일</span>
+                                            <span c-bind="taskstartdate:text:formatDateNum"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">종료일</span>
+                                            <span c-bind="taskenddate:text:formatDateNum"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cellCol" style="width: 80%;">
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">파일</span>
+                                            <div class="overflowContainer" style="overflow-y: auto; max-height: 645px; min-height: 645px;" loadsrc="../fragment/filetreeselector.html">                                    
+                                            </div>                                
+                                        </div>                            
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rowFlexContainer" style="justify-content: end;">
+                            <div class="buttonView" onclick="submitUploadFiles()">
+                                <span>태스크 결과 보고</span>
+                            </div>
+                        </div>
+                    </div>               
+                </div>                
+            </article>
+            <aside>        
+            </aside>
+        </main>
+    </div>
+</body>
+</html>
+<script>
+    function runSetup() {
+        TMAPI.getTaskDetail({taskpkey : getParam('taskpkey')}).then(data => {            
+            bindView($('.cellView').get(0), data.body.taskdetail);
+        });
+    }
+
+    function submitUploadFiles(data) {
+        const treeItems = document.querySelectorAll('.fileTreeSelectorViewerFragment .treeItem');
+        if(treeItems.length == 0) { showToast('결과 파일을 첨부해주세요'); return; }
+        const entrylist = [];
+        const fileEntries = [];
+        treeItems.forEach(item => {
+            var obj = {}
+            obj.name = item.binddata.name;
+            obj.entrynum = item.binddata.entrynum;
+            obj.parentnum = item.binddata.parentnum;
+            obj.isfile = item.binddata.isfile;
+            obj.size = 0;
+            obj.modifydate = 0;
+            if(item.binddata.isfile == "Y") {  
+                fileEntries.push({entrynum : item.binddata.entrynum, entry : item.binddata.entry });
+                obj.size = item.binddata.size;
+                obj.modifydate = item.binddata.modifydate;
+            }
+            entrylist.push(obj);
+        });        
+        
+        TMAPI.setTaskStatusToDone({taskpkey : getParam('taskpkey'), entrylist : JSON.stringify(entrylist)}).then(res => {
+            if(res.head.status != "error") {                
+                uploadEntries(res.body, fileEntries);            
+            }               
+        }).catch();
+    }
+
+    function uploadEntries(res, fileEntries) {
+        var entries = fileEntries;
+        var totalcnt = entries.length;
+        var done = function(){
+            totalcnt = totalcnt - 1;
+            if(totalcnt == 0) { checkUploadDone(); }
+        }
+        if(totalcnt == 0) { checkUploadDone(); return; }
+        entries.forEach(entry => {
+            res.entrylist.forEach(resent => {
+                if(entry.entrynum == parseInt(resent.entrynum)) {
+                    entry.uploadtoken = resent.uploadtoken;
+                    uploadEntry(entry, done);
+                }
+            });            
+        });
+    } 
+
+    function uploadEntry(entry, uploadDone) {        
+        var progressfn = (entrynum, per) => {
+            let view = $('.fileTreeSelectorViewerFragment .treeItem[entrynum="' + entrynum + '"] .progressView');
+            view.show();
+            $('progress', view).val(per);
+        }
+        var retfn = entrynum => {
+            let target = $('.fileTreeSelectorViewerFragment .treeItem[entrynum="' + entrynum + '"] .progressView');            
+            uploadDone();
+        }
+        entry.entry.file(file => {
+            sendFileEntry(file, progressfn, retfn, entry.uploadtoken, entry.entrynum, "/uploadFileTaskEntry.json");
+        })        
+        
+    }
+
+    function checkUploadDone() {
+        TMAPI.taskEntryCheckUploadDone({taskpkey : getParam('taskpkey')}).then(res => {                
+            if(res.body.result=="done") { 
+                alert('태스크 결과가 보고되었습니다.');
+                location.href = "taskmanagement.html?taskpkey=" + getParam('taskpkey');
+             }
+            else { alert(res.body.result) }
+        }).catch(e => {});
+    }
+</script>

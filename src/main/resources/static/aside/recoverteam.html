@@ -1,0 +1,30 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">팀 제한 해제</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <span class="msg"></span>
+        </div>        
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitRecoverTeam()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitRecoverTeam() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.taskmanagerpkey = $('.asideView').get(0).adata.taskmanagerpkey;        
+        COMAPI.setTaskManagerToNormal(formdata).then(res => {
+            updateUI($('.asideView').get(0).adata.name + "팀 제한이 해제되었습니다.");
+        }).catch();
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;
+        $('.asideView .msg').text(d.name + ' 팀 제한을 해제하겠습니까?')
+    }
+</script>

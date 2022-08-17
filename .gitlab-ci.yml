@@ -1,0 +1,56 @@
+image: docker:20.10.11
+stages:
+  - build
+  - package
+  - deploy
+
+build:
+  image: gradle:jdk17
+  stage: build
+  script: 
+    - gradle build --exclude-task test
+    - ls build/libs -al
+  artifacts:
+    paths:
+      - build/libs/*.jar
+  tags: 
+      - ok
+
+package:
+  stage: package
+  only:
+    - main
+    - stage
+  services:
+    - docker:dind
+  script:
+    - docker build -t registry.gitlab.com/baul1/toonmanager:$VERSION .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/baul1/toonmanager:$VERSION
+  tags: 
+      - ok
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  variables:
+    DATASOURCEURL: $DATASOURCEURL
+    DBUSERNAME: $DBUSERNAME
+    DBUSERPASSWD: $DBUSERPASSWD
+    REDISHOST: $REDISHOST
+    REDISPORT: $REDISPORT
+    SERVICEPORT: $SERVICEPORT
+    UPLOADROOT: $UPLOADROOT
+    FILESRC: $FILESRC
+
+
+  before_script:
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker info
+    - docker container rm -f app
+    - docker run -d -p "$SERVICEPORT":"$SERVICEPORT" --name app -e SERVICEPORT=$SERVICEPORT  -e DATASOURCEURL="$DATASOURCEURL" -e DBUSERNAME=$DBUSERNAME -e DBUSERPASSWD="$DBUSERPASSWD" -e REDISHOST=$REDISHOST -e REDISPORT="$REDISPORT" -e UPLOADROOT="$UPLOADROOT"  -v "$FILESRC":"$UPLOADROOT" --restart always registry.gitlab.com/baul1/toonmanager:$VERSION
+    - docker container ls -a
+  tags: 
+      - ok

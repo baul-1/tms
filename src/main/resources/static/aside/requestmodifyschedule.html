@@ -1,0 +1,50 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">종료일 변경 요청</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">      
+        <div class="asideContent">
+            <div class="propertyView">
+                <span class="key">작업명</span>
+                <span class="value" c-bind="workname:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">시작일</span>
+                <span class="value" c-bind="startdate:text:formatDateNum"></span>
+            </div>
+            <div class="inputView">
+                <input id="enddate" c-bind="enddate:value:formatDateNum" name="enddate" type="date" required>
+                <label for="enddate">종료일</label>
+            </div>
+            <div class="inputView">
+                <input id="comment" name="comment" type="text" required>
+                <label for="comment">사유</label>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitCreateWorkSchedule()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitCreateWorkSchedule() {
+        const formdata = getDataFrom('.asideView');
+        formdata.workpkey = $('.asideView').get(0).adata.workpkey;
+        console.log(formdata);
+        const todaystring = formatDTS(new Date());
+        formdata.enddate = formdata.enddate.replace(/-/g, "");        
+        if(formdata.enddate - todaystring < 0) { showToast("오늘 이전으로 변경할 수 없습니다."); return; }
+        if(formdata.enddate - $('.asideView').get(0).adata.startdate < 0) { showToast("시작일 이전으로 변경할 수 없습니다."); return;}
+        if(formdata.comment.trim() == "") { showToast("사유를 입력해주세요."); return; }        
+        MEAPI.addWorkSchedule(formdata).then(res => { updateUI("종료일 변경을 요청하였습니다."); }).catch();
+    }
+
+    function mapAside(d) {
+        console.log(d);        
+        $('.asideView').get(0).adata = d;
+        bindView($('.asideView').get(0), d);
+    }
+</script>

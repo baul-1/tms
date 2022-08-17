@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+
+<body>
+    <div id="app" user="com">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="overview.html" auth="com"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">overview</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="cellView">                        
+                        <div class="cellCol" style="width: 40%;">
+                            <div class="cellRow">
+                                <div class="cellCol">
+                                    <div class="cell view">
+                                        <span class="cellTitle">진행중인 타이틀</span>
+                                        <span c-bind="titlecount:text:formatNumber"></span>
+                                    </div>
+                                </div>
+                                <div class="cellCol">
+                                    <div class="cell view">
+                                        <span class="cellTitle">진행중인 에피소드</span>
+                                        <span c-bind="episodecount:text:formatNumber"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="cellRow" >
+                                <div class="cell view">
+                                    <span class="cellTitle">주요활동</span>
+                                    <div class="chartBox">
+                                        <canvas id="mainacts" height="500" style="max-height: 500px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cellRow">
+                                <div class="cellCol">
+                                    <div class="cell">
+                                        <span class="cellTitle">종류</span>
+                                        <select id="kindfilter" class="kindFilter" style="font-size: 12px;" onchange="updateMainActsChart(currentData.mainacts)">
+                                            <option value="title" selected>타이틀</option>
+                                            <option value="episode">에피소드</option>                                            
+                                        </select>                                  
+                                    </div>
+                                </div>                                
+                                <div class="cellCol">
+                                    <div class="cell">
+                                        <span class="cellTitle">시작</span>
+                                        <input type="month" class="monthFilter" chart="mainacts" kind="from" onchange="updateMainActsChart(currentData.mainacts)">
+                                    </div>
+                                </div>
+                                <div class="cellCol">
+                                    <div class="cell">
+                                        <span class="cellTitle">종료</span>
+                                        <input type="month" class="monthFilter" chart="mainacts" kind="to" onchange="updateMainActsChart(currentData.mainacts)">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="cellCol" style="width: 40%;">
+                            <div class="cellRow">
+                                <div class="cellCol">
+                                    <div class="cell view">
+                                        <span class="cellTitle">태스크 매니저</span>                                        
+                                        <span c-bind="tmcount:text:formatNumber"></span>
+                                    </div>
+                                </div>
+                                <div class="cellCol">
+                                    <div class="cell view">
+                                        <span class="cellTitle">작업자</span>
+                                        <span c-bind="workercount:text:formatNumber"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cellRow">
+                                <div class="cell view">
+                                    <span class="cellTitle">태스크매니저별 진행 컷</span>
+                                    <div class="chartBox">
+                                        <canvas id="tmacts" height="500" style="max-height: 500px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="cellRow">                                
+                                <div class="cellCol">
+                                    <div class="cell">
+                                        <span class="cellTitle">시작</span>
+                                        <input type="month" class="monthFilter" chart="tmacts" kind="from" onchange="updateTMActsChart(currentData.tmacts)">
+                                    </div>
+                                </div>
+                                <div class="cellCol">
+                                    <div class="cell">
+                                        <span class="cellTitle">종료</span>
+                                        <input type="month" class="monthFilter" chart="tmacts" kind="to" onchange="updateTMActsChart(currentData.tmacts)">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="cellCol" style="width: 20%;">
+                            <div class="cellRow">
+                                <div class="cell view">
+                                    <span class="cellTitle">진행중인 종류별 태스크</span>
+                                    <div class="chartBox">
+                                        <canvas id="curtask" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cellRow">
+                                <div class="cell view">
+                                    <span class="cellTitle">예정된 태스크</span>
+                                    <div class="overflowContainer" style="margin-top: 10px; overflow-y: auto; min-height: 310px; max-height: 310px;">
+                                        <div class="upcomingtasklist" c-bind="upcomingtasklist:list" >
+                                            <item>
+                                                <div class="rowView" >
+                                                    <span c-bind="startdate:text:formatDateNum"></span>
+                                                    <span c-bind="name:text"></span>                                                
+                                                </div>
+                                            </item>
+                                            <emptyitem style="display: none;">
+                                                <div class="emptyContainer">
+                                                    <div class="msgBox">
+                                                        <span>예정된 태스크가 없습니다.</span>
+                                                    </div>
+                                                </div>
+                                            </emptyitem>                                        
+                                        </div>                                    
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+
+</html>
+
+<script>    
+    var mainActsChart;
+    var tmActsChart;
+    var curTaskChart;
+    var mainActsChartConfig = {
+            responsive : true,
+            type: 'line',
+            options : {               
+                indexAxis : 'x',
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins : {
+                    legend : {
+                        position : 'bottom',
+                        display : true,
+                        align : 'start',
+                        labels : {
+                            font : {
+                                size: 11,
+                                weight : 700                                
+                        },
+                        boxWidth : 10,
+                        boxHeight : 10                        
+                        },
+                        textAlign : 'center'
+                    }
+                }  
+            }
+        }
+    
+    var tmActsChartConfig = {
+        type: 'bar',
+            options : {
+                indexAxis : 'x',
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                },
+                plugins : {
+                    legend : {
+                        position : 'bottom',
+                        display : true,
+                        align : 'start',
+                        labels : {
+                            font : {
+                                size: 11,
+                                weight : 700                                
+                            },
+                            boxWidth : 10,
+                            boxHeight : 10
+                        },
+                        textAlign : 'center'
+                    }
+                }  
+            }
+    }
+
+    var curTaskConfig = {
+        type: 'doughnut',
+            showDatapoints: true,
+            options : {
+                plugins : {
+                    legend : {
+                        position : 'bottom',
+                        display : true,
+                        align : 'center',
+                        labels : {
+                            font : {
+                                size: 11,
+                                weight : 700                                
+                        },
+                        boxWidth : 20
+                        },
+                        textAlign : 'center'
+                    },
+                },                
+                pieceLabel: {
+                   mode: 'label'
+                }    
+            }
+    }
+    
+    function runSetup() {        
+        findItems(document);        
+        setOverview();    
+    }
+
+    
+
+    function setOverview() {
+        COMAPI.getBoard({year : new Date().getFullYear()}).then(data => {            
+            currentData.mainacts = data.body.activities;
+            currentData.tmacts = data.body.taskmanageractivities;
+            currentData.curtasks = data.body.currenttasklist;            
+            bindView(document, data.body);            
+            initMonthFilter();            
+            mainActsChart = new Chart($('#mainacts'), mainActsChartConfig);
+            tmActsChart = new Chart($('#tmacts'), tmActsChartConfig);
+            curTaskChart = new Chart($('#curtask'), curTaskConfig);
+            updateMainActsChart(currentData.mainacts);
+            updateTMActsChart(currentData.tmacts);
+            updateCurTaskChart(currentData.curtasks);
+        })
+    }
+
+    function updateMainActsChart(list) {
+        const kind = $('.kindFilter').val();        
+        const fromMonth = $('.monthFilter[kind="from"][chart="mainacts"]').val();
+        const toMonth = $('.monthFilter[kind="to"][chart="mainacts"]').val();
+        const labels = getChartLabels(fromMonth, toMonth);
+        const filtered = getRangedList(labels, list);
+        mainActsChartConfig.data.labels = labels;        
+        mainActsChart.data.datasets = [];
+        if(kind == "title") {
+            mainActsChartConfig.data.datasets.push(getChartData(filtered, "titlestartcnt", "a", "시작"));
+            mainActsChartConfig.data.datasets.push(getChartData(filtered, "titleingcnt", "b", "진행"));
+            mainActsChartConfig.data.datasets.push(getChartData(filtered, "titledonecnt", "c", "종료"));
+        }
+        if(kind == "episode") {
+            mainActsChartConfig.data.datasets.push(getChartData(filtered, "episodestartcnt", "a", "시작"));
+            mainActsChartConfig.data.datasets.push(getChartData(filtered, "episodeingcnt", "b", "진행"));
+            mainActsChartConfig.data.datasets.push(getChartData(filtered, "episodedonecnt", "c", "종료"));
+        }
+        mainActsChart.update();                
+    }
+
+    function updateTMActsChart(list) {        
+        const fromMonth = $('.monthFilter[kind="from"][chart="tmacts"]').val();
+        const toMonth = $('.monthFilter[kind="to"][chart="tmacts"]').val();
+        const labels = getChartLabels(fromMonth, toMonth);
+        const formatted = formatTMActsList(list, labels);        
+        tmActsChartConfig.data.labels = labels;        
+        tmActsChart.data.datasets = [];
+        formatted.forEach((item, idx) => {
+            const color = ["a", "b", "c", "d", "e", "f"]                                    
+            tmActsChart.data.datasets.push(getChartData(item.data, "count", color[idx % color.length], item.name));
+        })        
+        tmActsChart.update();        
+    }
+
+    function updateCurTaskChart(list) {        
+        curTaskChart.data.labels = ["밑색", "채색", "기타"];
+        curTaskChart.data.datasets = getCurrentTaskDataSets(list);        
+        curTaskChart.update();
+    }
+
+    function getCurrentTaskDataSets(list) {
+        let ret = [];
+        const obj = {};
+        obj.backgroundColor = [getRootStyle('--theme-color-alt-a'), getRootStyle('--theme-color-alt-b'), getRootStyle('--theme-color-alt-c')];
+        const data = [];        
+        data.push(getLength(list, "A"));
+        data.push(getLength(list, "B"));
+        data.push(getLength(list, "ETC"));
+        obj.data = data;        
+        ret.push(obj);
+        return ret;
+    }
+
+    function formatTMActsList(list, labels) {
+        let ret = [];
+        list.forEach(item => {
+            var temp = [];
+            item.cutscountlist.forEach(cutItem => {
+                var obj = {taskmanagerpkey : item.taskmanagerpkey, name : item.name}
+                Object.assign(obj, cutItem);
+                temp.push(obj);
+            });
+            ret.push({
+                name : item.name,
+                data : getRangedList(labels, temp)
+            });
+        });
+        return ret;
+    }
+    
+
+    function getChartLabels(from, to) {
+        let ret = [];
+        const fromMonth = formatDFSMonth(from);
+        const toMonth = formatDFSMonth(to);
+        for(var d = new Date(fromMonth); d <= toMonth; d.setMonth(d.getMonth() + 1)) {
+            const rDate = new Date(d);
+            ret.push(formatDTSMonth(rDate).slice(0, 7));
+        }        
+        return ret;
+    }
+
+    function initMonthFilter() {
+        const today = new Date();        
+        const fromday = new Date();
+        const toMonth = formatDTSMonth(today);
+        const fromMonth = formatDTSMonth(fromday.setMonth(fromday.getMonth()- 5));
+        $('.monthFilter[kind="to"]').val(toMonth);
+        $('.monthFilter[kind="from"]').val(fromMonth);
+    }
+
+    function getChartData(list, kind, color, label) {        
+        let ret = {};
+        let dataArray = [];
+        for(let i=0; i < list.length; i++) {
+            dataArray.push(parseInt(list[i][kind]));
+        }
+        ret.data = dataArray;
+        ret.label = label;
+        ret.tension = 0.4;
+        ret.backgroundColor = getRootStyle("--theme-color-alt-" + color);
+        ret.borderColor = getRootStyle("--theme-color-alt-" + color);      
+        return ret;
+    }
+
+</script>

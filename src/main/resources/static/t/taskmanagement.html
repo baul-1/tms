@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="../js/main.js"></script> 
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="taskmanagement.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">task management</div>
+                    </div>
+                    <div class="contentHeaderEndContainer">
+                        <span class="material-icons" style="font-size: 18px; cursor: pointer;" onclick="goCreateTask()">add</span>
+                        <span class="material-icons" onclick="goTaskGantt()">insights</span>                        
+                    </div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList tasklist" style="min-width: 600px; max-width: 600px; transition: all ease-in-out 0.5s;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:8px; align-items: center;">
+                                    <span class="itemListTitle">태스크</span>
+                                    <span class="material-icons task filtericon" style="font-size: 18px; cursor: pointer;" onclick="showTaskFilter()">filter_alt</span>
+                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>상태</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 70%;">
+                                        <span>태스크명</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>종류</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>진행률</span>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 210px);">
+                                    <div class="colFlexContainer" c-bind="tasklist:list" style="gap: 10px;">
+                                        <div class="rowView skeleton" c="10">
+                                        </div>           
+                                        <item>
+                                            <div class="rowView light" c-bind="taskpkey:taskpkey:selectTask" style="cursor: pointer;">
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span c-bind="taskstatus:text:formatTaskStatus"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 70%;">
+                                                    <span c-bind="taskname:text:formatTaskName"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span c-bind="taskkind:text:formatTaskKind"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <div class="progressView">
+                                                        <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                        <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                    </div>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>태스크가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList worklist" style="display: none; min-width: 400px; max-width: 400px;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="material-icons showtasklisticon" style="display: none; font-size: 18px; cursor: pointer;" onclick="showTaskList()">chevron_left</span>
+                                    <span class="itemListTitle">작업</span>                                    
+                                    <span class="material-icons work filtericon" style="font-size: 18px; cursor: pointer;" onclick="showWorkFilter()">filter_alt</span>
+                                </div>
+                                <div class="rowView header">
+
+                                    <div class="rowItem" style="width: 15%;">
+                                        <span>상태</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 15%;">
+                                        <span>작업자</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 45%;">
+                                        <span>작업명</span>
+                                    </div>      
+                                    <div class="rowItem" style="width: 25%;">
+                                        <span>진행률</span>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 210px);" onscroll="showMoreList(this)">
+                                    <div class="colFlexContainer" c-bind="worklist:list" style="gap: 10px;" listidx="0" step="15">
+                                        <item>
+                                            <div class="rowView light" c-bind="workpkey:workpkey:selectWork" style="cursor: pointer;">
+                                                <div class="rowItem" style="width: 15%;">
+                                                    <span c-bind="status:text:formatWorkStatus"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 15%;">
+                                                    <span c-bind="workername:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 35%;">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span class="material-icons" style="font-size: 20px;" c-bind="workcauselist:text:setRequestAlarm"></span>
+                                                </div>
+
+                                                <div class="rowItem" style="width: 25%;">                                                    
+                                                    <div class="progressView">
+                                                        <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                        <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                    </div>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>작업이 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList fragments" style="display: none;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle"></span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="pickerView">
+                                        <div class="pickerStart">
+                                            <div class="categoryContainer">
+                                                <span class="category active" category="request" onclick="selectItem(this, showRequest())">요청</span>
+                                                <span class="category" category="fileviewer" onclick="selectItem(this, showFileViewer())">파일</span>
+                                                <span class="category" category="style" onclick="selectItem(this, showStyle())">스타일</span>
+                                            </div>
+                                        </div>
+                                        <div class="pickerEnd"></div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="fragment request" loadsrc="../fragment/request.html"></div>
+                                <div class="fragment fileviewer" loadsrc="../fragment/workfileviewer.html" style="display: none;"></div>
+                                <div class="fragment style" loadsrc="../fragment/style.html" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+</html>
+<script> 
+    function runSetup() {
+        findItems(document);  
+        showSkeleton('.tasklist');
+        initTaskFilterData();      
+        setListTask();                
+    }    
+
+    function initTaskFilterData() {
+        $('.task.filtericon').get(0).filterdata = {
+            titlepkey : "ALL",
+            episodepkey : "ALL",
+            taskstatus : "ALL",
+            taskkind: "ALL"
+        }
+    }
+
+    function initWorkFilterData() {
+        $('.work.filtericon').get(0).filterdata = {
+            workerpkey : "ALL",
+            status : "ALL",
+            priority: "ALL",
+            workreq : "ALL"
+        }
+    }
+
+    function setListTask() {
+        TMAPI.listTask().then(data => {                          
+            currentData.tasklist = data.body.tasklist;
+            renderTaskList();
+        });
+    }
+
+    function renderTaskList() {
+        clearItems('.tasklist');    
+        clearItems('.worklist');    
+        $('.worklist').hide(); 
+        $('.skeleton').hide();   
+        bindView($('.tasklist').get(0), {tasklist : getFilteredTaskList(currentData.tasklist)});
+        $('.tasklist .rowView[taskpkey="' + getParam('taskpkey') + '"]').click();
+    }
+    
+    function renderWorkList() {        
+        clearItems('.worklist');    
+        $('.worklist').show();            
+        bindView($('.worklist').get(0), {worklist : getFilteredWorkList(currentData.selectedtask.worklist)});        
+        $('.worklist .rowView[workpkey="' + getParam('workpkey') + '"]').click();
+    }
+
+    function formatTaskName(v, d, e) {
+        return `${d.titlename} > ${d.episodename} > ${v}` ;
+    }
+
+
+    function getFilteredTaskList(tasklist) {
+        let ret = getCopyObject(tasklist);
+        const taskfilterdata = $('.task.filtericon').get(0).filterdata;
+        ret = ret
+        .filter(task => {return taskfilterdata.titlepkey == "ALL" || taskfilterdata.titlepkey == task.titlepkey})        
+        .filter(task => {return taskfilterdata.episodepkey == "ALL" || taskfilterdata.episodepkey == task.episodepkey})
+        .filter(task => {return taskfilterdata.taskstatus == "ALL" || taskfilterdata.taskstatus == task.taskstatus})
+        .filter(task => {return taskfilterdata.taskkind == "ALL" || taskfilterdata.taskkind == task.taskkind})
+        return ret;
+    }
+
+    function getFilteredWorkList(worklist) {        
+        let ret = getCopyObject(worklist);
+        const workfilterdata = $('.work.filtericon').get(0).filterdata;                
+        ret = ret
+        .filter(work => {return workfilterdata.workerpkey == "ALL" || workfilterdata.workerpkey == work.workerpkey})        
+        .filter(work => {return workfilterdata.status == "ALL" || workfilterdata.status == work.status})        
+        .filter(work => {return workfilterdata.priority == "ALL" || workfilterdata.priority == work.priority})        
+        .filter(work => {return hasWorkRequest(workfilterdata.workreq, work)})        
+        return ret;
+    }
+
+    function hasWorkRequest(req, work) {                
+        if(req == "ALL") { return true; }
+        if(work.workcauselist.length > 0 && work.workcauselist.find(cause => cause.workcausestatus == "PENDING")) {return true}
+        return false;
+    }
+
+    function selectTask(v, d, e) {    
+        $(e).on('click', function() {            
+            $('.tasklist .rowView').removeClass('active');
+            $(this).addClass('active');
+            setListScroll(e);
+            currentData.selectedtask = d;
+            initWorkFilterData();
+            $('.work.filtericon').removeClass('active');
+            showAside('../aside/detailtask.html', function(){ mapAside(d) });
+            renderWorkList();            
+        });
+        return v;
+    }
+
+
+    function selectWork(v, d, e) {
+        $(e).on('click', function(){            
+            $('.worklist .rowView').removeClass('active');
+            $(this).addClass('active');
+            $('.tasklist').css('margin-left', '-620px');
+            $('.showtasklisticon').show();
+            TMAPI.getWorkDetail({workpkey : v}).then(data => {
+                TMAPI.listEntryVersionCommit({workpkey : v}).then(res => {
+                    setListScroll(e);
+                    $('.fragments').show();
+                    data.body.work.entryversioncommitlist = res.body.entryversioncommitlist;
+                    $('.fragment.request').get(0).workdata = data.body.work;
+                    $('.fragment.fileviewer').get(0).workdata = data.body.work;
+                    $('.fragment.style').get(0).workdata = data.body.work;                                                            
+                    const currentCategory = $('.category.active').attr('category');                    
+                    switch(currentCategory) {
+                        case "style" : { showStyle(); break; }
+                        case "request" : { showRequest(); break; }
+                        case "fileviewer" : { showFileViewer(); break; }
+                        default : { showStyle() }
+                    }
+                });
+            })
+        })
+        return v;
+    }
+
+    function goTaskGantt() {
+        location.href = "taskschedule.html";
+    }
+
+    function goCreateTask() {
+        location.href = "createtask.html";
+    }
+
+    function showTaskFilter() {        
+        showAside('../aside/filtertask.html', function(){ mapAside(currentData)});
+    }
+
+    function showWorkFilter() {        
+        showAside('../aside/filterwork.html', function(){ mapAside(currentData)});
+    }
+
+    function onTaskFilterSubmitClick(filtered) {
+        $('.task.filtericon').removeClass('active');
+        for(key in filtered) { if(filtered[key] != "ALL") { $('.task.filtericon').addClass('active'); } }
+        $('.task.filtericon').get(0).filterdata = filtered;        
+        renderTaskList();
+    }
+
+    function onWorkFilterSubmitClick(filtered) {        
+        $('.work.filtericon').removeClass('active');
+        for(key in filtered) { if(filtered[key] != "ALL") { $('.work.filtericon').addClass('active'); } }
+        $('.work.filtericon').get(0).filterdata = filtered;        
+        renderWorkList();
+    }
+
+    function showTaskList() {
+        $('.tasklist').css('margin-left', '0px');
+        $('.showtasklisticon').hide();
+        $('.fragments').hide();
+    }
+
+    function showRequest() {        
+        const requestlist = $('.fragment.request').get(0).workdata.workcauselist;
+        $('.fragment').hide();
+        $('.fragment.request').show();
+        $('.fragment.request .requestdetail').hide();                
+        clearItems('.fragment.request');        
+        bindView($('.fragment.request').get(0), {workcauselist: requestlist});
+        showAside('../aside/detailwork.html', function(){ mapAside($('.fragment.request').get(0).workdata) });
+    }
+
+    function showFileViewer() {            
+        const versionlist = $('.fragment.fileviewer').get(0).workdata.entryversioncommitlist;
+        versionlist.sort((a, b) => { return a.entryversionpkey > b.entryversionpkey ? 1 : -1})        
+        $('.fragment').hide();
+        $('.fragment.fileviewer').show();
+        $('.fragment.fileviewer .entrylist').hide();
+        clearItems('.fragment.fileviewer .versionlist');
+        bindView($('.fragment.fileviewer .versionlist').get(0), { versionlist : versionlist});
+        showAside('../aside/detailwork.html', function(){ mapAside($('.fragment.fileviewer').get(0).workdata) });
+    }
+
+    function showStyle() {    
+        const stylelist = getChildList($('.fragment.style').get(0).workdata.characterlist, "stylelist");                
+        $('.fragment').hide();
+        $('.fragment.style').show();
+        $('.stylecanvas').hide();                
+        clearItems('.fragment.style');
+        bindView($('.fragment.style').get(0), {stylelist: stylelist});
+        showAside('../aside/detailwork.html', function(){ mapAside($('.fragment.style').get(0).workdata) });
+    }
+
+    function onEntryViewClick(v, d, e) {
+        $(e).on('click', function() {
+            showAside('../aside/detailentry.html', function(){ mapAside(d) });
+        });
+        if(d.isfile == "Y") { 
+            $(e).on('dblclick', function() {
+                downloadFile(d.entryversionpkey);
+            });   
+        } else {
+            $(e).on('dblclick', function(){                
+                updateEntrylist(d);
+            });
+        }  
+        return v;
+    }
+
+    function onDownloadClick(v, d, e) {
+        $(e).on('click', function(){                       
+            if(d.isfile == "Y") {
+                downloadFile(d.entryversionpkey);
+            } else {
+                downloadFolder(v, $('.versionlist .rowView.active').attr('updatesetpkey'), d.workpkey);
+            }
+        })        
+        return v;
+    }
+
+    function updateUI(msg) {
+        showToast(msg);                
+        clearItems('.tasklist');
+        $('.worklist').hide();
+        hideAside();
+        showSkeleton('.tasklist');
+        initTaskFilterData();      
+        setListTask();
+    }
+
+    function updateCurrentWork(msg, workpkey, category) {
+        showToast(msg);     
+        clearItems('.worklist');
+        $('.tasklist .rowView.active').click();
+        $('.category[category="' + category + '"]').click();
+        $('.worklist .rowView[workpkey="' + workpkey + '"]').click();
+    }
+</script>

@@ -1,0 +1,75 @@
+<div class="fileViewerFragment">
+    <div class="fragmentMain">
+        <div class="colFlexContainer" style="gap: 16px;">
+            <div class="itemList entrylist"> 
+                <div class="rowFlexContainer">
+                    <div class="rowView">                                                
+                        <div class="rowItem entrypath"></div>                                            
+                        <div class="rowItem">                            
+                            <span class="material-icons" c-bind="taskpkey:taskpkey:setDownloadTaskEntry" style="cursor: pointer;">download</span>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="itemListEnd">
+                    <div class="overflowContainer" style="height: 650px; overflow-y: auto; background-color: white;">
+                        <div class="rowFlexContainer" style="gap: 16px; padding: 16px; flex-wrap: wrap; height: fit-content;" c-bind="entrylist:list">
+                            <item>
+                                <div class="entryView" c-bind="taskentrypkey:taskentrypkey:onEntryViewClick">
+                                    <div class="thumb">
+                                        <span class="material-icons thumbicon" c-bind="isfile:text:formatEntryIcon">folder</span>
+                                    </div>
+                                    <div class="info">
+                                        <span c-bind="name:text"></span>
+                                    </div>
+                                </div>
+                            </item>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>    
+    findItems($('.fileViewerFragment').get(0));
+    function formatEntryIcon(v, d, e) {
+        if(v == "Y") { return "description" }
+        if(v == "N") { return "folder" }
+    }
+
+    function updateFileViewer(data) {                             
+        clearItems('.fileViewerFragment');            
+        bindView($('.fileViewerFragment').get(0), data);
+        appendPath(data);
+    }    
+
+    function goRoot(v, d, e) {
+        $(e).on('click', function() {
+            appendPath(d);
+            updateFileViewer(d);
+        });
+        return v;
+    }
+
+    function appendPath(data) {
+        const path = document.createElement('span');
+        path.textContent = data.name;
+        path.classList.add('path');
+        path.style.cursor = 'pointer';
+        path.addEventListener('click', function() {
+            hideAside();
+            $(this).nextAll('.path').remove();
+            $(this).remove();
+            updateFileViewer(data);
+        });
+        document.querySelector('.entrypath').appendChild(path);
+    }
+
+    function setDownloadTaskEntry(v, d, e) {
+        $(e).on('click', function(){ if(v) onDownloadTaskEntryAll(v); });        
+        return v;
+    }
+</script>

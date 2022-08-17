@@ -1,0 +1,46 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">스타일 추가</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">    
+        <div class="asideContent">
+            <img src="../img/noimage.jpg" name="imagesrc" class="imageSelector" alt="img" onclick="selectStyleFile(this)">
+            <div class="inputView">
+                <input id="name" name="name" type="text" required>
+                <label for="name">스타일 이름</label>
+            </div>
+        </div>    
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitCreateStyle()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitCreateStyle() {
+        var formData = getDataFrom('.asideView');       
+        if(formData.imagesrc == undefined) { showToast("이미지를 추가해주세요"); return; }
+        if(formData.name.trim() == "") { showToast("스타일 이름을 입력하세요"); return; }
+        formData.characterpkey = $('.asideView').get(0).adata.characterpkey;        
+        COMAPI.addStyle(formData).then(res => {            
+            updateStyleUI('스타일이 추가되었습니다.');
+        }
+        ).catch();
+    }
+
+    function selectStyleFile(ele) {
+        const progressFn = percent => { }   
+        const retfn = url => {
+            $(ele).attr('src', IMG_SERVER + currentUser.auth + "/file" + url);
+            $(ele).attr('srca', url);
+        }
+        sendFileWithInput(progressFn, retfn, currentUser.auth);
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;
+        $('.imageSelector').attr('auth', d.auth);
+    }
+</script>

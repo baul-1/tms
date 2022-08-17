@@ -1,0 +1,139 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">태스크 상세</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <div class="propertyView">
+                <span class="key">진행률</span>
+                <div class="progressView">
+                    <span class="value" c-bind="progress:text:formatProgress"></span>
+                    <progress c-bind="progress:value" max="100" min="0"></progress>                
+                </div>
+                
+            </div>
+            <div class="propertyView">
+                <span class="key">태스크 이름</span>
+                <span class="value" c-bind="taskname:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">타이틀</span>
+                <span class="value" c-bind="titlename:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">에피소드</span>
+                <span class="value" c-bind="episodename:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">종류</span>
+                <span class="value" c-bind="taskkind:text:formatTaskKind"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">상태</span>
+                <span class="value" c-bind="taskstatus:text:formatTaskStatus"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">생성일</span>
+                <span class="value" c-bind="taskcreatedate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">시작일</span>
+                <span class="value" c-bind="taskstartdate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">종료일</span>
+                <span class="value" c-bind="taskenddate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">완료된 컷</span>
+                <span class="value" c-bind="worklist:text:setCutCount"></span>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" role="tm" c-bind="taskstatus:taskstatus:goCloseTask" style="display: none;">
+                <span>태스크 결과 보고</span>
+            </div>
+            <div class="buttonView" role="tm" c-bind="taskstatus:taskstatus:goTaskFiles" style="display: none;">
+                <span>태스크 파일 보기</span>
+            </div>
+            <div class="buttonView" role="tm" c-bind="taskstatus:taskstatus:createWork" style="display: none;">
+                <span>작업추가</span>
+            </div>
+            <div class="buttonView" role="tm" c-bind="taskstatus:taskstatus:deleteTask" style="display: none;">
+                <span>삭제</span>
+            </div>
+            <div class="buttonView taskmanagement" role="tm" c-bind="taskstatus:taskstatus:goTaskManagement">
+                <span>태스크 관리</span>
+            </div>
+        </div>
+        
+    </div>
+    
+</div>
+<script>    
+    function mapAside(d) {            
+        $('.asideView').get(0).adata = d;     
+        bindView($('.asideView').get(0), d);        
+        if(location.pathname != "/tm/taskschedule.html") {
+            $('.buttonView.taskmanagement').hide();
+        }
+    }
+
+    function setCutCount(v, d, e) {
+        let cnt = 0;
+        for(i=0; i < v.length; i++) {
+            cnt += parseInt(v[i].confirmcutcount);
+        }
+        return formatNumber(cnt);
+    }
+
+    function goCloseTask(v, d, e) {        
+        if(v == "ING" && d.progress == "100") {
+            $(e).show();
+            $(e).on('click', function(){
+                location.href = "closetask.html?taskpkey=" + d.taskpkey;
+            });
+        }
+        return v;
+    }
+
+    function goTaskFiles(v, d, e) {        
+        if(v == "DONE") {
+            $(e).show();
+            $(e).on('click', function(){
+                location.href = "taskfiles.html?taskpkey=" + d.taskpkey;
+            });
+        }
+        return v;
+    }
+
+    function createWork(v, d, e) {             
+        if(v != "DONE") {
+            $(e).show();
+            $(e).on('click', function(){
+                location.href = "creatework.html?taskpkey=" + d.taskpkey;
+            });
+        }
+        return v;
+    }
+
+    function deleteTask(v, d, e) {        
+        if(d.worklist.length <= 0) {
+            $(e).show();
+            $(e).on('click', function(){
+                showAside('../aside/deletetask.html', function(){ mapAside(d)});
+            });
+        }
+        return v;
+    }
+
+    function goTaskManagement(v, d, e) {                
+        $(e).on('click', function(){
+            location.href = "taskmanagement.html?taskpkey=" + d.taskpkey;
+        });
+        return v;
+    }
+
+
+</script>

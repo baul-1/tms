@@ -1,0 +1,103 @@
+#root {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#loginBackground {
+    width: 100vw;
+    height: 100vh;    
+    background-color: var(--theme-color-alt-e);
+}
+
+#welcome {
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    transform: translate(-50%, -50%);    
+    width: 600px;    
+    height: 300px;
+}
+
+#welcome .container {
+    width: 100%;
+    height: 100%;    
+}
+
+#welcome .container .welcomenTitleBox {
+    color: white;   
+}
+
+#welcome .container .welcomenTitleBox h1 {
+    font-size: 4em;
+}
+
+#login {
+    position: absolute;
+    top: 50%;
+    left: 75%;
+    transform: translate(-50%, -50%);    
+    width: 400px;    
+    height: 300px;    
+}
+
+#login .container {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--theme-color-bg);
+    background-color: rgba(256, 256, 256, 1);
+}
+
+.titleContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 25%;    
+    font-size: 1.5em;
+    letter-spacing: .15em;  
+}
+
+.titleContainer span {
+    font-weight: 700;
+}
+
+.formContainer {
+    padding: 0 16PX;
+    width: 100%;    
+    height: 75%;
+}
+
+.formContainer .formBox {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 10px;
+}
+
+.formContainer .formBox input {
+    border: none;
+    background-color: #EEEEEE;
+    border-radius: 8px;
+    padding: 14px;
+    outline: none;
+    width: 100%;
+    height: 25%;
+}
+
+.formContainer .formBox button {
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: var(--theme-color-prime);
+    border-radius: 8px;
+    height: 25%;
+    cursor: pointer;
+    color:white;
+    letter-spacing: .25em;
+}

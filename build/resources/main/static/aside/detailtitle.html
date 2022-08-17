@@ -1,0 +1,84 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">타이틀 상세</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">    
+        <div class="asideContent">
+            <img src="../img/noimage.jpg" name="thumb" c-bind="thumb:src:getImage" class="imageSelector" alt="img" onerror="this.src='../img/noimage.jpg'">
+            <div class="propertyView">
+                <span class="key">타이틀 이름</span>
+                <span class="value" c-bind="name:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">생성일</span>
+                <span class="value" c-bind="createdate:text:formatDateNum"></span>
+            </div>        
+            <div class="propertyView">
+                <span class="key">에피소드</span>
+                <span class="value" c-bind="episodecnt:text"></span>
+            </div>
+        </div>    
+        <div class="asideFooter">
+            <div class="buttonView" c-bind="status:status:createEpisode">
+                <span>에피소드 추가</span>
+            </div>
+            <div class="buttonView" c-bind="titlepkey:titlepkey:modifyTitle">
+                <span>수정</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:deleteTitle">
+                <span>삭제</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:recoverTitle">
+                <span>복구</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:goTaskFileViewer">
+                <span>파일 보기</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function mapAside(d) {         
+        $('.asideView').get(0).adata = d;     
+        bindView($('.asideView').get(0), d);
+    }
+
+    function goTaskFileViewer(v, d, e) {
+        $(e).on('click', function(){
+            location.href = "files.html?titlepkey=" + d.titlepkey;
+        })
+        return v;
+    }
+
+    function createEpisode(v, d, e) {
+        if(v == "INVISIBLE") { $(e).hide(); }
+        $(e).on('click', function(){            
+            showAside('../aside/createepisode.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+
+    function modifyTitle(v, d, e) {        
+        $(e).on('click', function(){
+            showAside('../aside/modifytitle.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+
+    function deleteTitle(v, d, e) {
+        if(v == "INVISIBLE") { $(e).hide(); }
+        $(e).on('click', function(){
+            showAside('../aside/deletetitle.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+
+    function recoverTitle(v, d, e) {
+        if(v == "REG") { $(e).hide(); }
+        $(e).on('click', function(){
+            showAside('../aside/recovertitle.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+</script>

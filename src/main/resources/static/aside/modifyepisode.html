@@ -1,0 +1,35 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">에피소드 수정</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <div class="inputView">
+                <input id="name" name="name" type="text" required>
+                <label for="name">에피소드 이름</label>
+            </div>
+        </div>       
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitModifyEpisode()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitModifyEpisode() {
+        const formdata = getDataFrom('.asideView');                    
+        formdata.titlepkey = $('.asideView').get(0).adata.titlepkey;
+        formdata.episodepkey = $('.asideView').get(0).adata.episodepkey;
+        if(formdata.name.trim() == "") { showToast("에피소드 이름을 입력하세요"); return; }        
+        COMAPI.modifyEpisode(formdata).then(res => {
+            updateEpisodeUI('에피소드가 변경되었습니다.');
+        }).catch();
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;        
+        $('#name').val(d.name);
+    }
+</script>

@@ -1,0 +1,214 @@
+<div class="styleFragment stylelist">
+
+        <div class="rowFlexContainer" style="gap: 16px;">
+            <div class="colFlexContainer" id="stylelist" c-bind="stylelist:list" style="gap: 10px; min-width: 240px; max-width: 240px;">
+                <item>
+                    <div class="profileView" c-bind="imagesrc:imagesrc:onStyleSelect" style="cursor: pointer;">
+                        <div class="wrap">
+                            <img class="thumb material-icons" c-bind="imagesrc:src:getImage" onerror="this.src='/img/noimage.jpg'"></img>
+                        </div>
+                        <div class="infoContainer">
+                            <div class="info">
+                                <span class="name" c-bind="name:text"></span>
+                                <div class="detail">
+                                    <span class="stylecount" c-bind="palette:text:setPaletteCount, stylepkey:stylepkey"></span>
+                                    <span>colors</span>
+                                </div>
+                            </div>
+                            <div class="actions">                                                                                                                                          
+                            </div>
+                        </div>
+                    </div> 
+                </item>
+                <emptyitem style="display: none;">
+                    <div class="emptyContainer">
+                        <div class="msgBox">
+                            <span>스타일이 없습니다.</span>                                            
+                        </div>
+                    </div>
+                </emptyitem>
+            </div>
+
+            <div class="colFlexContainer stylecanvas" style="gap: 10px; display: none;">
+                <div class="pickerView" role="com" style="display: none;">
+                    <div class="pickerStart">
+                        <div class="categoryContainer">
+                            <span class="category active" category="1" onclick="selectItem(this)">얼굴</span>
+                            <span class="category" category="2" onclick="selectItem(this)">헤어</span>
+                            <span class="category" category="3" onclick="selectItem(this)">기타</span>
+                        </div>
+                    </div>
+                    <div class="pickerEnd">
+                        <div class="buttonView" onclick="generateColors()">
+                            <span>컬러 추출 하기</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflowContainer canvasContainer" style="max-height: 650px; overflow-y: auto;">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    findItems($('.styleFragment').get(0));    
+    var faceGen = colorNameGen('얼굴');
+    var hairGen = colorNameGen('헤어');
+    var etcGen = colorNameGen('기타');
+    function setPaletteCount(v, d, e) {
+        return v.length;
+    }    
+
+    function onStyleSelect(v, d, e) {
+        $(e).on('click', function() {   
+            filterRole('.styleFragment');
+            $('.stylelist .profileView').removeClass('active');
+            $(e).addClass('active');
+            $('canvas.picker').remove();
+            if($('aside').hasClass('active')) { drawCanvas(v, d, e); }
+            showAside('../aside/detailstyle.html', function(){ mapAside(d); });
+        });
+        return v;
+    }    
+
+    function drawCanvas(v, d, e) {
+        const container = document.querySelector('.canvasContainer');        
+        const canvas = document.createElement('canvas');
+        canvas.classList.add('picker');
+        container.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        const img = new Image();  
+        canvas.setAttribute("style", "width: 100px; height: 100px; display:block;");
+        img.src = getImage(v);                
+        img.crossOrigin = "anonymous";
+        img.onload = () => {            
+            $('.stylecanvas').show();
+            var sw = img.width;
+            var sh = img.height;            
+            var ratio = (container.offsetWidth - 10) / sw;
+            sw = sw * ratio;
+            sh = sh * ratio;
+            canvas.width = sw;
+            canvas.height = sh;            
+            ctx.drawImage(img, 0, 0, sw, sh);
+            canvas.setAttribute("style", "width: " + sw + "px; height:" + sh + "px;" + "display:block;");            
+            if(canvas.classList.contains('picker')) {
+                if(currentUser.auth == "com") {
+                    canvas.onmousedown = ev => { pickColor(ev, canvas, d); }
+                }                
+            }
+        }
+        img.onerror = () => {
+            img.src = "/img/noimage.jpg";
+            ctx.drawImage(img, 0, 0);
+        } 
+    }    
+
+    function pickColor(ev, canvas, d) {
+        const rect = canvas.getBoundingClientRect();
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        const pos = { x : Math.round(ev.clientX - rect.left), y : Math.round(ev.clientY - rect.top)};
+        const idarr = ctx.getImageData(0, 0, w, h).data;
+        const idx = (w * pos.y) + pos.x;
+        const colorArray = idarr.slice(4 * idx, (4 * idx) + 4);
+        appendColor(colorArray, d);
+    }
+
+    function appendColor(colorArray, d) {
+        if(!$('aside').hasClass('active')) {
+            $('canvas.picker').remove();        
+            showAside('../aside/detailstyle.html', function(){ mapAside(d); });
+        } else {
+            const hexCode = formatHexCode(colorArray);
+            const category = $('.category.active').attr('category');        
+            const colordata = {code : "100", characterstylepkey : d.characterstylepkey, name: getColorDefaultName(category), category : category, colorhex : hexCode.slice(-8), colorstatus : "NEW" };
+            const clone = $('.colFlexContainer.palette').get(0).tempdom.cloneNode(true);
+            bindView(clone, colordata);
+            $('.colFlexContainer.palette').prepend(clone);
+            $('.colFlexContainer.palette').closest('.overflowContainer').scrollTop(0);
+            $('.itemList.palette input[type="checkbox"]').get(0).checked = true;
+            setPaletteMode('edit');
+        }        
+    }
+
+    function getColorDefaultName(category) {
+        if(category == "1") { return faceGen.next().value; }
+        if(category == "2") { return hairGen.next().value; }
+        if(category == "3") { return etcGen.next().value; }
+        return "new color";        
+    }
+
+    function* colorNameGen(catagoryname) {
+        var idx = 1;
+        while(true) {
+            yield `${catagoryname} ${idx++}`;
+        }
+    }
+
+    function generateColors() {
+        $('.pickerView .category[category="3"]').click();
+        const genColors = getGenColors($('canvas.picker').get(0));
+        genColors.p.forEach(color => {
+            appendColor(color, $('.styleFragment .profileView.active').get(0).binddata);
+        });
+    }
+
+    function getGenColors(canvas) {
+        let ret = {};        
+        var ctx = canvas.getContext("2d");
+        var w = canvas.width;
+        var h = canvas.height;
+        var img_array = ctx.getImageData(0, 0, w, h).data;
+        var p = [];
+        var pos = [];
+        p = [img_array.slice(0, 4)];
+        pos = [[0, 0]];
+        var step = 0;
+        var cur_rgba;
+        for (var y = 0; y < h; y++) {
+            for (var x = 0; x < w; x++) {
+                var cont = 0;
+                cur_rgba = img_array.slice(4 * step, 4 * step + 4);
+                step++;
+                for (var i = 0; i < p.length; i++) {
+                    var inner_check = 0;
+                    for (var c = 0; c < 3; c++) {
+                        if (Math.abs(p[i][c] / 255 - cur_rgba[c] / 255) > 0.2) inner_check++;
+                    }
+                    if (!inner_check) { cont++; break; }
+                }
+                if (cont > 0) continue;
+                else {
+                    p.push(cur_rgba);
+                    pos.push([x, y]);
+                }
+            }
+        }
+        ret.p = p;
+        ret.pos = pos;
+        return ret;
+    }
+
+    function redrawCanvas() {
+        let e = $('.stylelist .profileView.active').get(0)
+        let d = e.binddata;
+        let v = d.imagesrc;
+        $('canvas.picker').remove();
+        drawCanvas(v, d, e);
+    }
+
+    function onShowAside() { redrawCanvas() }
+
+    function onHideAside() { redrawCanvas() }
+
+    function onNavShrink() { redrawCanvas() }
+
+    function onNavExpand() { redrawCanvas() }
+
+    window.addEventListener('resize', function(){ redrawCanvas(); });
+
+</script>

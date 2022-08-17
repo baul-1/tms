@@ -1,0 +1,29 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">태스크 완료</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <span class="msg"></span>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitDoneTask()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitDoneTask() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.taskpkey = $('.asideView').get(0).adata.taskpkey;             
+        console.log(formdata);
+        /* DONETASK HERE */
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;
+        $('.asideView .msg').text(d.taskname + ' 태스크를 완료하겠습니까?')
+    }
+</script>

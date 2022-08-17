@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+
+<body>
+    <div id="app" user="com">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="title.html" auth="com"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">title</div>
+                    </div>
+                    <div class="contentHeaderEndContainer">
+                        <span class="material-icons" style="font-size: 18px; cursor: pointer;" onclick="createTitle()">add</span>
+                    </div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList titlelist medium" c-root="titlelist">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center; justify-content: space-between;">
+                                    <span class="itemListTitle">타이틀</span>   
+                                    <div class="wrap" style="display: flex; flex-direction: row; justify-content: flex-end;">
+                                        <div class="toggleSwitchView title">
+                                            <span class="toggleSwitchTitle material-icons title">close</span>
+                                            <label class="switch">
+                                                <input type="checkbox" class="currenttitlekind" onchange="toggleTitilListKind(this)">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>                                                                     
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>리스트</span>
+                                    </div>                                                                     
+                                </div>                                                               
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 224px); overflow-y: auto;">
+                                    <div class="colFlexContainer" id="titlelist" c-bind="titlelist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <item>
+                                            <div class="profileView" c-bind="titlepkey:titlepkey:onSelectTitle" style="cursor: pointer;" bindonce="Y">
+                                                <div class="wrap">
+                                                    <img class="thumb material-icons" c-bind="thumb:src:getImage" onerror="this.src='/img/noimage.jpg'" bindonce="Y"></img>
+                                                </div>
+                                                <div class="infoContainer">
+                                                    <div class="info">
+                                                        <span class="name" c-bind="name:text"></span>
+                                                        <div class="detail">
+                                                            <span class="episodecount" c-bind="episodecnt:text, titlepkey:titlepkey"></span>
+                                                            <span>EPISODES</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="actions">
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </item>
+                                        <div class="bindmore" bind-id="titlelist" onclick="fetchListTitle()">
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>타이틀이 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>                                        
+                                    </div>                                    
+                                </div>                                
+                            </div>
+                        </div>
+
+                        <div class="itemList episodelist" c-root="episodelist" style="display: none;">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center; justify-content: space-between;">
+                                    <span class="itemListTitle">에피소드</span> 
+                                    <div class="wrap" style="display: flex; flex-direction: row; justify-content: flex-end; width: 10%;">
+                                        <div class="toggleSwitchView episode">
+                                            <span class="toggleSwitchTitle material-icons episode">close</span>
+                                            <label class="switch">
+                                                <input type="checkbox" class="currentepisodekind" onchange="toggleEpisodeListKind(this)">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>                                   
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>상태</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 80%;">
+                                        <span>에피소드 이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>생성일</span>
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 224px);">
+                                    <div class="colFlexContainer" id="episodelist" c-bind="episodelist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <item>
+                                            <div class="rowView light" c-bind="status:status:onSelectEpisode" style="cursor: pointer;"  bindonce="Y">
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span c-bind="status:text:formatEpisodeStatus"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 80%; ">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span c-bind="createdate:text:formatDateNum"></span>
+                                                </div>
+
+                                            </div>                                
+                                        </item>
+                                        <div class="bindmore" bind-id="episodelist" onclick="fetchListEpisode($('.episodelist').get(0).titledata)">
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>에피소드가 없습니다.</span>                                                                                        
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+
+</html>
+
+<script>    
+    function runSetup() {        
+        findItems(document);        
+        fetchListTitle();
+    }    
+
+    function fetchListTitle() {
+        const listname = 'titlelist';
+        const config = {
+            start : getListStart(listname),
+            limit : getListLimit(listname)
+        }        
+
+        const fn = $('.currenttitlekind').get(0).checked ?
+        COMAPI.listTitleAll(config) : COMAPI.listTitleVisible(config);        
+        
+        fn.then(data => {
+
+            bindView(document.querySelector('[c-root="' + listname + '"]'), data.body);
+            setBindMore(data.body.next, listname);
+
+            hideAside();            
+            clearItems('.episodelist');    
+            $('.episodelist').hide();
+        })
+    }
+
+    function fetchListEpisode(title) {
+        const listname = 'episodelist';
+
+        const config = {
+            titlepkey : title.titlepkey,
+            start : getListStart(listname),
+            limit: getListLimit(listname)
+        }
+
+        const fn =  $('.currentepisodekind').get(0).checked ?
+        COMAPI.listEpisodeAll(config) : COMAPI.listEpisodeVisible(config);
+        
+        fn.then(data => {            
+            data.body.titlestatus = title.status;
+            data.body.titlename = title.name;
+            data.body.titlepkey = title.titlepkey;            
+            bindView(document.querySelector('[c-root="' + listname + '"]'), data.body);            
+            setBindMore(data.body.next, listname);
+        });
+    }
+
+    function toggleTitilListKind(ele) {
+        if(ele.checked) {            
+            $('.toggleSwitchTitle.title').addClass('active');            
+        } else {            
+            $('.toggleSwitchTitle.title').removeClass('active');
+        }
+        clearItems('.titlelist');        
+        fetchListTitle();
+    }
+
+    function toggleEpisodeListKind(ele) {
+        if(ele.checked) {
+            $('.toggleSwitchTitle.episode').addClass('active');            
+        }
+        $('.toggleSwitchTitle.episode').removeClass('active');
+        clearItems('.episodelist');
+        fetchListEpisode($('.episodelist').get(0).titledata);
+    }  
+
+    function onSelectTitle(v, d, e) {
+        if(d.status == "INVISIBLE") { $(e).addClass('delete'); }
+        $(e).on('click', function(){                        
+            $('.titlelist .profileView').removeClass('active');
+            $(this).addClass('active');
+
+            clearItems('.episodelist');
+            $('.episodelist').show();
+            $('.episodelist').get(0).titledata = d;
+
+            fetchListEpisode(d);                       
+            showAside("../aside/detailtitle.html", function(){ mapAside(d); });
+        });
+        return v;
+    }
+
+    function onSelectEpisode(v, d, e) {
+        if(v == "INVISIBLE") {
+            $(e).addClass('delete');            
+        }
+        $(e).on('click', function() {
+            $('.episodelist .rowView').removeClass('active');
+            $(this).addClass('active');
+            showAside('../aside/detailepisode.html', function(){ mapAside(d) });
+        })
+        return v;
+    }
+
+    function selectFile(ele){        
+        const progressFn = percent => { }   
+        const retfn = url => {
+            $(ele).attr('src', IMG_SERVER + "com/file" + url);
+            $(ele).attr('srca', url);
+        }
+        sendFileWithInput(progressFn, retfn, "com");
+    }
+
+    function createTitle() {        
+        $('.titlelist .profileView').removeClass('active');
+        showAside('../aside/createtitle.html');
+    }
+
+    function modifyEpisode(v, d, e) {
+        $(e).on('click', function(ev){
+            ev.stopPropagation();
+            showAside('../aside/modifyepisode.html', function(){ mapAside(d); });
+        })        
+        return v;
+    }
+   
+    function updateUI(msg) {
+        $('aside').hide();
+        showToast(msg);
+        clearItems('.titlelist');
+        clearItems('.episodelist');
+        $('.episodelist').hide();
+        fetchListTitle();        
+    }
+
+    function updateEpisodeUI(msg) {
+        hideAside();
+        showToast(msg);
+        clearItems('.episodelist');        
+        $('.titlelist .profileView.active').click();
+    }
+
+        
+
+    
+    
+</script>

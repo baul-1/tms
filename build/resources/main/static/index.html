@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
+    <title>INDEX</title>
+</head>
+
+<body>
+    <div id="root">
+        <div id="loginBackground"></div>
+        <div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50%; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+            <div class="box" onclick="location.href='/c/login.html'" style="height: 100%; width: 30%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;">
+                <span class="material-icons" style="font-size: 10em; ">storefront</span>
+                <span style="font-weight: 500;">어드민</span>
+            </div>
+
+            <div class="box" onclick="location.href='/t/login.html'" style="height: 100%; width: 30%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;">
+                <span class="material-icons" style="font-size: 10em; ">assignment_ind</span>
+                <span style="font-weight: 500;">태스크 매니저</span>
+            </div>
+
+            <div class="box" onclick="location.href='/m/login.html'" style="height: 100%; width: 30%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;">
+                <span class="material-icons" style="font-size: 10em;">person</span>
+                <span style="font-weight: 500;">작업자</span>
+            </div>
+        </div>
+    </div>
+    <style>
+        .box span { color: white; }
+        .box.active span { color: var(--theme-color-bg); }
+    </style>
+</body>
+</html>
+<script>
+    $('.box').on('mouseover', function(){
+        $(this).addClass('active');
+    });
+
+    $('.box').on('mouseout', function(){
+        $(this).removeClass('active');
+    });
+</script>

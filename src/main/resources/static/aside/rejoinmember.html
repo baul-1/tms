@@ -1,0 +1,29 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">멤버 재가입</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <span class="msg"></span>
+        </div>        
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitRejoinMember()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitRejoinMember() {
+        const formdata = getDataFrom('.asideView');
+        formdata.taskmanagerpkey = $('.asideView').get(0).adata.taskmanagerpkey;
+        formdata.workerpkey = $('.asideView').get(0).adata.workerpkey;
+        COMAPI.rejoinWorkerToWorkgroup(formdata).then(res => { updateMemberUI($('.asideView').get(0).adata.name + " 멤버가 팀에 재가입 되었습니다."); }).catch();
+    }
+
+    function mapAside(d) {        
+        $('.asideView').get(0).adata = d;
+        $('.asideView .msg').text(d.name + ' 멤버를 팀에 재가입 시키겠습니까?');
+    }
+</script>

@@ -1,0 +1,30 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">태스크 삭제</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <span class="msg"></span>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitDeleteTask()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitDeleteTask() {
+        const formdata = getDataFrom('.asideView');            
+        formdata.taskpkey = $('.asideView').get(0).adata.taskpkey;             
+        TMAPI.deleteTask(formdata).then(data => {
+            updateUI('태스크가 삭제되었습니다.');
+        })
+    }
+
+    function mapAside(d) {
+        $('.asideView').get(0).adata = d;
+        $('.asideView .msg').text(d.taskname + ' 태스크를 삭제하겠습니까?')
+    }
+</script>

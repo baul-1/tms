@@ -1,0 +1,166 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">스타일 상세</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+
+            <div class="itemList palette">
+                <div class="itemListStart">
+                    <div class="rowFlexContainer" style="gap:10px; align-items: center; justify-content: space-between;">
+                        <span class="itemListTitle">팔레트</span>
+                        <div class="wrap" style="display: flex; flex-direction: row; justify-content: flex-end;">
+                            <div class="toggleSwitchView" style="display: none;">
+                                <span class="toggleSwitchTitle material-icons">edit</span>
+                                <label class="switch">
+                                    <input type="checkbox" onchange="changePaletteMode(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowView header" style="border-bottom-color: var(--theme-color-bg);">
+                        <div class="rowItem">
+                            <span>컬러</span>
+                        </div>                                
+                    </div>
+                </div>
+                <div class="itemListEnd">
+                    <div class="overflowContainer" style="max-height: 670px; overflow-y: auto;">
+                        <div class="colFlexContainer palette" c-bind="palette:list" style="gap: 10px;">
+                            <item>
+                                <div class="colorView">
+                                    <div class="colorViewStart">
+                                        <div class="colorSample" c-bind="colorhex:colorhex:drawColor" palettemode="view"></div>
+                                        <div class="colorSample picker" c-bind="colorhex:colorhex:drawColor" palettemode="edit" style="display: none;" palettemode="edit" onclick="showToast('준비중입니다.')"></div>
+                                        <div class="colorInfo">
+                                            <input type="hidden" name="code" c-bind="code:value">
+                                            <input type="hidden" name="characterstylepkey" c-bind="characterstylepkey:value">
+                                            <div class="colorHex">
+                                                <span c-bind="colorhex:text:formatHexCodeName" palettemode="view"></span>
+                                                <input type="text" name="colorhex" c-bind="colorhex:value, colorhex:lasthex" style="border-bottom: 1px solid var(--theme-color-bg); display: none;" palettemode="edit" oninput="onColorInput(this)" onblur="onColorBlur(this)">
+                                            </div>                                        
+                                            <div class="colorName" >
+                                                <span c-bind="name:text" palettemode="view"></span>
+                                                <input type="text" name="name" c-bind="name:value" style="border-bottom: 1px solid var(--theme-color-bg); display: none;" palettemode="edit" oninput="bindValue(this, $(this).siblings()[0], 'text')"></input>
+                                            </div>
+                                            
+                                        </div>                                
+                                        <div class="colorCategory">
+                                            <span c-bind="category:text:fommatCategory" palettemode="view"></span>
+                                            <select c-bind="category:select" name="category" style="display: none;" palettemode="edit" onchange="selectCategory(this);">
+                                                <option value="1">얼굴</option>
+                                                <option value="2">헤어</option>
+                                                <option value="3">기타</option>
+                                            </select>
+                                        </div>                                    
+                                    </div>
+                                    <div class="colorViewEnd">        
+                                        <span class="colorStatus" c-bind="colorstatus:text"></span>
+                                        <span class="material-icons" style="font-size: 16px; cursor: pointer; display: none;" onclick="deleteColorView(this)" palettemode="edit" >close</span>
+                                    </div>
+                                </div>                         
+                            </item>
+                        </div>   
+                    </div>                 
+                </div>
+            </div>
+            
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView updatepalette" palettemode="edit" role="com" style="display: none;">
+                <span onclick="updatePalette()">업데이트 팔레트</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>    
+    findItems($('.asideView').get(0));    
+    function mapAside(d) {                
+        d.palette.sort((a, b) => { return parseInt(a.category)  > parseInt(b.category) ? 1 : -1 });
+        $('.asideView').get(0).adata = d;
+        bindView($('.asideView').get(0), d);        
+        if(currentUser.auth == "com") { $('.asideView .toggleSwitchView').show();}
+    }
+
+    function toggleCheckWorker(v, d, e) {
+        $(e).on('click', function(ev){
+            ev.stopPropagation();
+            const target = $('.check', e);
+            if(target.hasClass('checked')) {
+                target.removeClass('checked');
+                target.hide();
+            } else {
+                target.addClass('checked');
+                target.show();
+            }            
+        })
+        return v;
+    }
+
+    function editColorView(ele) {        
+        const colorView = ele.closest('.colorView');        
+    }
+
+    function changePaletteMode(ele) {
+        if(ele.checked) { setPaletteMode('edit'); return; }
+        setPaletteMode('view');
+    }
+
+    function setPaletteMode(mode) {
+        $('[palettemode]').hide();
+        $('[palettemode="' + mode + '"]').show();        
+    }
+
+    function selectCategory(ele) {
+        const target = $(ele).siblings()[0];
+        target.textContent = ele.options[ele.selectedIndex].textContent;
+        target.setAttribute('category', ele.options[ele.selectedIndex].value);        
+    }    
+
+    function onColorInput(ele) {        
+        $('.buttonView.updatepalette').hide();
+        if(!isValidColorHex(ele.value)) {            
+            return;
+        }
+        updateColor(ele, ele.value, false);
+    }
+
+    function onColorBlur(ele) {
+        $('.buttonView.updatepalette').show();
+        if(!isValidColorHex(ele.value)) { updateColor(ele, ele.getAttribute('lasthex'), true); return; }
+        updateColor(ele, ele.value, false);
+        
+    }
+
+    function updateColor(ele, val, updateInput) {
+        const sibling = $(ele).siblings()[0];
+        const item = $(ele).closest('item')[0];
+        const samples = item.querySelectorAll('.colorSample');
+        samples.forEach(target => { target.setAttribute('colorhex', drawColor(val, undefined, target))});
+        ele.setAttribute('lasthex', val);
+        sibling.textContent = '#' + val;
+        if(updateInput) { ele.value = val; }
+    }    
+
+    function updatePalette() {
+        const formdata = {}
+        const colorlist = [];
+        const items = document.querySelectorAll('.palette item');        
+        items.forEach(item => {
+            const data = getDataFrom('.colorView', item)
+            colorlist.push(data);            
+        });
+        
+        formdata.characterstylepkey = $('.asideView').get(0).adata.characterstylepkey;        
+        formdata.colorlist = JSON.stringify(colorlist);
+        COMAPI.updatePalette(formdata).then(res => {
+            if(res.head.status="OK") {
+                updateStyleUI('팔레트가 업데이트 되었습니다.');
+            }
+        });
+    }
+    
+
+</script>

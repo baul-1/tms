@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="../js/main.js"></script>
+    <script src="../js/gantt.js"></script>
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="member.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">member</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px;">
+
+                        <div class="itemList memberlist" style="min-width: 400px; max-width: 400px;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">맴버</span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 15%;">
+                                        <span>상태</span>                                        
+                                    </div>
+                                </div>                                
+                            </div>
+
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" c-bind="workerlist:list" style="gap: 10px;">                                        
+                                        <div class="rowView skeleton" c="10"></div>                                        
+                                        <item>
+                                            <div class="rowView light" c-bind="workerpkey:workerpkey:selectMember" style="cursor:pointer;">
+                                                <div class="rowItem">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 15%;">
+                                                    <span c-bind="status:text:formatMemberStatus"></span>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>멤버가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList worklist" style="min-width: 640px; max-width: 640px; display: none;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">작업</span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem" style="width: 20%;">
+                                        <span>상태</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 50%;">
+                                        <span>작업명</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>요청</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 20%;">
+                                        <span>진행률</span>
+                                    </div>
+                                </div>                                
+                            </div>
+
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" c-bind="worklist:list" style="gap: 10px;">
+                                        <item>
+                                            <div class="rowView light" c-bind="workpkey:workpkey:selectWork" style="cursor:pointer;">
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <span c-bind="status:text:formatWorkStatus"></span>                                                    
+                                                </div>
+                                                <div class="rowItem" style="width: 50%;">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 10%;">
+                                                    <span class="material-icons" style="font-size: 20px;" c-bind="workcauselist:text:setRequestAlarm"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 20%;">
+                                                    <div class="progressView">
+                                                        <span class="value" c-bind="progress:text:formatProgress"></span>
+                                                        <progress c-bind="progress:value" max="100" min="0"></progress>                
+                                                    </div>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>작업이 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+</html>
+
+<script>
+    function runSetup() {
+        findItems(document);        
+        showSkeleton('.memberlist');
+        setListMember();
+    }
+
+    
+
+    function setListMember(){
+        TMAPI.listMember().then(memberdata => {                       
+            TMAPI.listTask().then(taskdata => {           
+                $('.skeleton').hide();     
+                bindView($('.memberlist').get(0), memberdata.body); 
+                taskdata.body.tasklist.forEach(task => {
+                    task.worklist.forEach(work => {
+                        work.taskname = task.taskname;
+                        work.titlename = task.titlename;
+                        work.episodename = task.episodename;
+                        work.kind = task.taskkind;
+                        work.workname = work.name;
+                    })
+                })
+                currentData.worklist = getChildList(taskdata.body.tasklist, "worklist", "progress");
+                $('.memberlist .rowView[workerpkey="' + getParam('workerpkey') + '"]').click();                
+            });
+        });
+
+    }
+
+    function updateUI(msg) {
+        showToast(msg);
+        hideAside();
+        clearItems('.memberlist');
+        setListMember();
+    }
+
+    function selectMember(v, d, e) {
+        $(e).on('click', function(){
+            $('.memberlist .rowView').removeClass('active');
+            $(e).addClass('active'); 
+            setListScroll(e);
+            showAside('../aside/detailmember.html', function(){ mapAside(d) });
+            $('.worklist').show();
+            clearItems('.worklist');
+            bindView($('.worklist').get(0), {worklist : currentData.worklist.filter(work => {return work.workerpkey == v})})                        
+        });
+        return v;
+    }
+
+    function selectWork(v, d, e) {
+        $(e).on('click', function(){            
+            $('.worklist .rowView').removeClass('active');
+            $(e).addClass('active');
+            setListScroll(e);
+            showAside('../aside/detailwork.html', function(){ mapAside(d) });
+        });      
+        return v;  
+    }
+</script>

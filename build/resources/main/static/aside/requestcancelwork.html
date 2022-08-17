@@ -1,0 +1,36 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">작업 취소 요청</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">      
+        <div class="asideContent">
+            <div class="propertyView">
+                <span class="key">작업명</span>
+                <span class="value" c-bind="workname:text"></span>
+            </div>
+            <div class="inputView">
+                <input id="comment" name="comment" type="text" required>
+                <label for="comment">사유</label>
+            </div>
+        </div>
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitRequestCancelWork()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitRequestCancelWork() {
+        const formdata = getDataFrom('.asideView');
+        formdata.workpkey = $('.asideView').get(0).adata.workpkey;
+        if(formdata.comment.trim() == "") { showToast("사유를 입력해주세요."); return; }        
+        MEAPI.requestCancelWork(formdata).then(res => { updateUI("작업 취소를 요청하였습니다."); }).catch();
+    }
+
+    function mapAside(d) {                
+        $('.asideView').get(0).adata = d;
+        bindView($('.asideView').get(0), d);
+    }
+</script>

@@ -1,0 +1,55 @@
+<div class="fileTreeViewerFragment">
+    <div class="fragmentMain">
+
+        <div class="rowFlexContainer" style="gap: 16px;">
+            <div class="treeView" c-bind="entrylist:list">
+                <item>
+                    <div class="treeItem" c-bind="entrypkey:entrypkey:appendViewerChildItem, rel:rel, depth:depth, path:path" style="cursor: pointer;" >                            
+                        <div class="treeItemStart">                                
+                            <span class="material-icons expand" c-bind="isfile:text:formatExpandIcon"></span>
+                            <span class="material-icons" c-bind="isfile:text:formatEntryIcon"></span>
+                            <span class="name" c-bind="name:text"></span>
+                        </div>
+                        <div class="treeItemEnd">
+                            <span class="size" c-bind="size:text:formatEntrySize"></span>
+                        </div>
+                    </div>
+                </item>                    
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    findItems($('.fileTreeViewerFragment').get(0));    
+
+    function appendViewerChildItem(v, d, e) {        
+        if(d.isfile == "N") { $(e).attr('expand', "Y"); }
+        $(e).css('padding-left', d.depth * 25 + "px");        
+        $(e).on('click', function() {
+            showAside('../aside/detailentry.html', function(){ mapAside(d)});
+            if(d.isfile == "N") { toggelChildEntry(v, e); }                        
+        });
+        d.entrylist.forEach(entry => { appendTreeItem(entry, e, $('.fileTreeViewerFragment .treeView').get(0).tempdom.cloneNode(true)); });
+        return v;
+    }    
+
+    function formatExpandIcon(v, d, e) {
+        if(v == "Y") { $(e).css("margin-left", "24px"); return ""; };
+        return "chevron_right";        
+    }
+
+
+    function toggelChildEntry(entrypkey, ele) {
+        if($(ele).attr('expand') == "Y") {
+            $('.expand', $(ele)).text('expand_more');
+            $(ele).attr('expand', "N");
+        }
+        else {
+            $('.expand', $(ele)).text('chevron_right');
+            $(ele).attr('expand', "Y");
+        }
+        $('.fileTreeViewerFragment .treeItem[rel="' + entrypkey + '"]').closest("item").toggle();
+    }
+</script>

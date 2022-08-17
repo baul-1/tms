@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="tm">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="taskmanagement.html" auth="tm"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">task files</div>                        
+                    </div>
+                    <div class="contentHeaderEndContainer">                                            
+                    </div>
+                </div>
+                <div class="contentMain">     
+                    <div class="colFlexContainer" style="gap: 16px">
+                        <div class="wrap">
+                            <div class="cellView">
+                                <div class="cellCol" style="width: 20%;">
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">타이틀</span>
+                                            <span c-bind="titlename:text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">에피소드</span>
+                                            <span c-bind="episodename:text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">태스크 이름</span>
+                                            <span c-bind="taskname:text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">태스크 종류</span>
+                                            <span c-bind="taskkind:text:formatTaskKind"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">상태</span>
+                                            <span c-bind="taskstatus:text:formatTaskStatus"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">작업개수</span>
+                                            <span c-bind="worklist:text:formatLength"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">시작일</span>
+                                            <span c-bind="taskstartdate:text:formatDateNum"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">종료일</span>
+                                            <span c-bind="taskenddate:text:formatDateNum"></span>
+                                        </div>
+                                    </div>
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">완료일</span>
+                                            <span c-bind="taskdonedate:text:formatDateNum"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cellCol" style="width: 80%;">
+                                    <div class="cellRow">
+                                        <div class="cell view">
+                                            <span class="cellTitle">파일</span>
+                                            <div class="overflowContainer" style="overflow-y: auto; max-height: 733px; min-height: 733px;" loadsrc="../fragment/filetreeviewer.html">                                    
+                                            </div>                                
+                                        </div>                            
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>               
+                </div>                
+            </article>
+            <aside>        
+            </aside>
+        </main>
+    </div>
+</body>
+</html>
+<script>
+    function runSetup() {
+        
+        TMAPI.getTaskDetail({taskpkey : getParam('taskpkey')}).then(data => {
+            var d = data.body.taskdetail;
+            TMAPI.listTaskEntry({taskpkey : getParam('taskpkey')}).then(res => {                
+                res.body.taskentrylist.forEach(entry => { entry.entrypkey = entry.taskentrypkey; });
+                d.entrylist = getTreeFromArray(res.body.taskentrylist);
+                bindView($('.cellView').get(0), d);
+                console.log(d);
+            })
+            
+        });
+    }    
+</script>

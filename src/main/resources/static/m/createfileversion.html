@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="../js/main.js"></script> 
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="me">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="mywork.html" auth="me"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">CREATE FILE VERSION</div>
+                    </div>
+                    <div class="contentHeaderEndContainer"></div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList oldversionlist">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">최신 버전</span>
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span class="versionname"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="fragment filetreeviewer" loadsrc="../fragment/filetreeviewer.html"></div>
+                            </div>
+                        </div>
+
+                        <div class="itemList newversionlist">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">새 버전</span>
+                                </div>
+                                <div class="rowView" style="padding: 0;">
+                                    <div class="rowItem">
+                                        <div class="inputView" style="margin-top: 0;">
+                                            <input class="newversionname" id="vername" name="vername" type="text" required>
+                                            <label for="vername">버전 이름</label>
+                                        </div>         
+                                    </div>
+                                    <div class="buttonView">
+                                        <span onclick="submitCreateFileVersion()">버전 업로드</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="cellView">
+                                    <div class="cellRow">
+                                        <div class="cell">
+                                            <span class="cellTitle">파일</span>
+                                            <div class="overflowContainer" style="overflow-y: auto; min-height: 673px; max-height: 673px;">
+                                                <div class="fragment filetreeselector" loadsrc="../fragment/filetreeselector.html"></div>
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside>        
+            </aside>
+        </main>
+    </div>
+</body>
+</html>
+<script>
+
+function runSetup() {        
+        setOldVersonList();
+    }
+    
+    
+    function setCurrentEntryNum(entrynum) {
+        if(currentEntryNum <= parseInt(entrynum)) {
+            currentEntryNum = entrynum;
+        }
+    }
+
+    function getCurrentEntryNum() {
+        return parseInt(currentEntryNum);
+    }
+
+
+    function setOldVersonList() {
+        MEAPI.listEntryVersionCommit({workpkey : getParam('workpkey')}).then(data => {                        
+            const versionList = data.body.entryversioncommitlist;
+            versionList.sort((a, b) => { return parseInt(a.updatesetpkey) > parseInt(b.updatesetpkey) ? -1 : 1});
+            const lastestVersion = versionList[0];
+            lastestVersion.entrylist.forEach(entry => {
+                entry.entrynum = entry.entrypkey;
+                entry.parentnum = entry.rel;
+                setCurrentEntryNum(entry.entrypkey)
+            });
+            lastestVersion.entrylist = getTreeFromArray(lastestVersion.entrylist);            
+            $('.versionname').text(lastestVersion.name);
+            $('.versionname').attr('updatesetpkey', lastestVersion.updatesetpkey);
+            $('.fileTreeViewerFragment').get(0).entrylist = lastestVersion.entrylist; 
+            clearItems('.oldversionlist');            
+            clearItems('.newversionlist');
+            $('.newversionname').val("");
+            bindView($('.oldversionlist').get(0), { entrylist : lastestVersion.entrylist } );
+        })
+    }
+
+    function submitCreateFileVersion() {        
+        if($('.newversionname').val().trim() == undefined || $('.newversionname').val().trim() == "") {
+            showToast('버전 이름을 입력하세요');
+            return;
+        }
+        
+        const entrylist = [];
+        const oldEle = document.querySelectorAll('.filetreeviewer .treeItem');
+        const newEle = document.querySelectorAll('.filetreeselector .treeItem');
+        
+        if(newEle.length <= 0) {
+            showToast('새로운 파일 또는 폴더를 업로드 해주세요');
+            return;
+        }
+        
+        oldEle.forEach(item => {
+            if(item.classList.contains('DELETE')) {
+                const entry = {
+                    entrypkey : item.binddata.entrypkey,                    
+                    rel : item.binddata.rel,
+                    name : item.binddata.name,
+                    size : item.binddata.size,
+                    modifydate : item.binddata.modifydate,
+                    isfile : item.binddata.isfile,                    
+                    entrynum : item.binddata.entrynum,
+                    parentnum : item.binddata.parentnum,
+                    status : "DELETE"
+                };
+                if(item.binddata.isfile == "N") {
+                    entry.size = 0;
+                    entry.modifydate = 0;
+                }
+                entrylist.push(entry);
+            }
+        });
+
+
+        newEle.forEach(item => { if(item.classList.contains('ADD') || item.classList.contains('UPDATE') ) {            
+            const entry = {
+                    entrypkey : item.binddata.entrypkey,                    
+                    rel : item.binddata.rel,
+                    name : item.binddata.name,                    
+                    size : 0,
+                    modifydate : 0,
+                    isfile : "N",
+                    entrynum : item.binddata.entrynum,
+                    parentnum : item.binddata.parentnum,
+                    status : "NORMAL"
+                };
+
+            if(item.binddata.isfile == "Y") {
+                entry.isfile = "Y";
+                entry.size = item.binddata.size;
+                entry.modifydate = item.binddata.modifydate;
+            }                
+            entrylist.push(entry);             
+        }
+        });
+
+        if(entrylist.length == 0) { 
+            showToast('변경사항이 없습니다.');            
+            return;
+        }        
+        const data = {
+            workpkey : getParam('workpkey'),
+            entrylist : JSON.stringify(entrylist),
+            updatesetname : $('.newversionname').val()
+        } 
+        
+        sendData(data);   
+    }
+
+    function sendData(data) {
+        MEAPI.addEntry(data).then(res => {
+            if(res.head.status == "OK") {
+                uploadFiles(res.body);
+            }
+        }).catch();
+    }
+
+    function uploadFiles(data) {
+        if(data.entrylist.length <= 0) { uploadAllComplete(data.updatesetpkey)}
+        window.totaluploadcount = data.entrylist.length;
+        data.entrylist.forEach(entry => {
+            const entryitem = $('.fileTreeSelectorViewerFragment .treeItem[entrynum="' + entry.entrynum + '"]').get(0).binddata;        
+            uploadFile(entryitem, entry.uploadtoken, data.updatesetpkey);
+        })
+    }
+
+    function uploadFile(item, uploadtoken, updatesetpkey) {
+        const progressCallback = function(entrynum, per) {
+            console.log('entrynum', entrynum);
+            console.log('per', per);
+            const ele = $('.progressView', '.fileTreeSelectorViewerFragment .treeItem[entrynum="' + entrynum + '"]');
+            ele.show();
+            $('progress', ele).val(per);
+            $('.value', ele).text(per + "%");
+        }
+
+        const doneCallback = function(entrynum) {            
+            window.totaluploadcount = window.totaluploadcount - 1;
+            if(window.totaluploadcount <= 0) { uploadAllComplete(updatesetpkey); }
+        }
+
+        item.entry.file(file => {                     
+            sendFileEntry(file, progressCallback, doneCallback, uploadtoken, item.entrynum, "/uploadFileEntry.json");            
+        });
+    }
+
+    function uploadAllComplete(updatesetpkey){
+        MEAPI.checkUploadDone({updatesetpkey: updatesetpkey}).then(res => {                
+            if(res.body.result=="done") { updateUI("작업이 성공적으로 생성되었습니다.") }
+            else { alert(res.body.result) }
+        }).catch(e => {});
+    }
+
+    function updateUI(msg) {
+        showToast(msg);
+        setOldVersonList();
+    }
+
+    function onDownloadClick(v, d, e) {
+        $(e).on('click', function(){                       
+            console.log(d);
+            if(d.isfile == "Y") {
+                downloadFile(d.entryversionpkey);
+            } else {
+                downloadFolder(v, $('.oldversionlist .versionname').attr('updatesetpkey'), d.workpkey);
+            }
+        })        
+        return v;
+    }
+    
+
+
+
+</script>

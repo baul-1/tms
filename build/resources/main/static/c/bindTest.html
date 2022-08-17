@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <script src="/js/aside.js"></script>
+    <script src="/js/vinder.js"></script>
+    
+    <title>ICODE TMS</title>
+</head>
+
+<body>
+    <div id="app" user="com">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="title.html" auth="com"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">title</div>
+                    </div>
+                    <div class="contentHeaderEndContainer">
+                        <span class="material-icons" style="font-size: 18px; cursor: pointer;" onclick="showCreateTitle()">add</span>
+                    </div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px">
+
+                        <div class="itemList titlelist medium" id="titlelist">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center; justify-content: space-between;">
+                                    <span class="itemListTitle">타이틀</span>   
+                                    <div class="wrap" style="display: flex; flex-direction: row; justify-content: flex-end;">
+                                        <div class="toggleSwitchView title">
+                                            <span class="toggleSwitchTitle material-icons title">close</span>
+                                            <label class="switch">
+                                                <input id="titleToggle" type="checkbox" onchange="fetchListTitle()">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>                                                                     
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>리스트</span>
+                                    </div>                                                                     
+                                </div>                                                               
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 224px); overflow-y: auto;">
+                                    <div class="colFlexContainer" vind="titlelist:list" style="gap: 10px;" listidx="0" step="10">                                        
+                                        
+                                            <div class="profileView" vind="titlepkey:titlepkey:onSelectTitle" style="cursor: pointer;" v-item>
+                                                <div class="wrap">
+                                                    <img class="thumb material-icons" vind="thumb:src:getImage" onerror="this.src='/img/noimage.jpg'"></img>
+                                                </div>
+                                                <div class="infoContainer">
+                                                    <div class="info">
+                                                        <span class="name" vind="name:text, name:class"></span>
+                                                        <div class="detail">
+                                                            <span class="episodecount" vind="episodecnt:text, titlepkey:titlepkey"></span>
+                                                            <span>EPISODES</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="actions">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                        <div class="emptyContainer" v-empty>
+                                            <div class="msgBox">
+                                                <span>타이틀이 없습니다.</span>                                            
+                                            </div>
+                                        </div>
+                                        
+                                    </div>                                    
+                                </div>                                
+                            </div>
+                        </div>
+
+                        <div class="itemList episodelist" id="episodelist">
+                            <div class="itemListStart" >
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center; justify-content: space-between;">
+                                    <span class="itemListTitle">에피소드</span> 
+                                    <div class="wrap" style="display: flex; flex-direction: row; justify-content: flex-end; width: 10%;">
+                                        <div class="toggleSwitchView episode">
+                                            <span class="toggleSwitchTitle material-icons episode">close</span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="episodeToggle" onchange="fetchListEpisode()">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>                                   
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>상태</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 80%;">
+                                        <span>에피소드 이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 10%;">
+                                        <span>생성일</span>
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="overflow-y: auto; max-height: calc(100vh - 224px);">
+                                    <div class="colFlexContainer" id="episodelist" vind="episodelist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <div class="rowView light" vind="status:status:onSelectEpisode" style="cursor: pointer;" v-item>
+                                            <div class="rowItem" style="width: 10%;">
+                                                <span vind="status:text:formatEpisodeStatus"></span>
+                                            </div>
+                                            <div class="rowItem" style="width: 80%; ">
+                                                <span vind="name:text"></span>
+                                            </div>
+                                            <div class="rowItem" style="width: 10%;">
+                                                <span vind="createdate:text:formatDateNum"></span>
+                                            </div>
+                                        </div>                                
+                                        <div class="emptyContainer" v-empty>
+                                            <div class="msgBox">
+                                                <span>에피소드가 없습니다.</span>                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+
+</html>
+
+<script>     
+    const titleVinder = new Vinder('titlelist');  
+    const episodeVinder = new Vinder('episodelist');    
+
+    function runSetup() {        
+        fetchListTitle();
+    }
+    
+    async function fetchListTitle() {             
+        const config = {
+            start : 0,
+            limit : 20
+        }                  
+        const toggle = document.getElementById('titleToggle');
+        const fn = toggle.checked ? COMAPI.listTitleAll(config) : COMAPI.listTitleVisible(config);        
+        const data = await fn;      
+        titleVinder.clear();  
+        titleVinder.vind(data.body);
+    }
+
+    function onSelectTitle(v, d, e) {
+        if(d.status == "INVISIBLE") { $(e).addClass('delete'); }
+        e.addEventListener('click', () => {       
+            currentData.titlepkey = d.titlepkey;     
+            fetchListEpisode(d.titlepkey);            
+            ASIDE.detailTitle(() => mapAside(d));
+        });
+        return v;
+    }
+    
+    function onSelectEpisode(v, d, e) {
+        e.addEventListener('click', () => {
+            ASIDE.detailEpisode(() => mapAside(d));
+        });        
+        return v;
+    }
+
+    async function fetchListEpisode(titlepkey) {                
+        const config = {
+            titlepkey : titlepkey ? titlepkey : currentData.titlepkey,
+            start : 0,
+            limit : 20
+        }
+        const toggle = document.getElementById('episodeToggle');
+        const fn = toggle.checked ? COMAPI.listEpisodeAll(config) : COMAPI.listEpisodeVisible(config);        
+        const data = await fn;
+        episodeVinder.clear();
+        episodeVinder.vind(data.body);
+    }
+
+    
+
+    function showCreateTitle() {
+        ASIDE.createTitle(() => mapAside(d));         
+    }    
+    
+    
+</script>

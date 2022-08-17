@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="/js/api.js"></script>    
+    <script src="/js/main.js"></script>
+    <title>ICODE TMS</title>
+</head>
+<body>
+    <div id="app" user="com">
+        <header loadsrc="../layout/header.html">
+        </header>
+        <main>
+            <nav loadsrc="../layout/nav.html" currentmenu="team.html" auth="com"></nav>
+            <article>
+                <div class="contentHeader">
+                    <div class="contentHeaderStartContainer">
+                        <div class="title">team</div>
+                    </div>
+                    <div class="contentHeaderEndContainer">
+                        <span class="material-icons" style="font-size: 18px; cursor: pointer;" onclick="createTeam()">add</span> 
+                    </div>
+                </div>
+                <div class="contentMain">
+                    <div class="rowFlexContainer" style="gap:16px; ">
+                        <div class="itemList teamlist medium">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">팀</span>
+                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>팀 이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 15%;">
+                                        <span>상태</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" id="teamlist" c-bind="taskmanagerlist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <item>
+                                            <div class="rowView light" c-bind="taskmanagerpkey:taskmanagerpkey:onSelectTeam" style="cursor: pointer;">
+                                                <div class="rowItem">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 15%;">
+                                                    <span c-bind="status:text:formatTeamStatus"></span>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <div class="bindmore" bind-id="teamlist" onclick="fetchListTeam()">
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>팀이 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="itemList memberlist medium" style="display: none;">
+                            <div class="itemListStart">
+                                <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                                    <span class="itemListTitle">맴버</span>                                    
+                                </div>
+                                <div class="rowView header">
+                                    <div class="rowItem">
+                                        <span>이름</span>
+                                    </div>
+                                    <div class="rowItem" style="width: 15%;">
+                                        <span>상태</span>
+                                    </div>
+                                </div>                                
+                            </div>
+
+                            <div class="itemListEnd">
+                                <div class="overflowContainer" style="max-height: calc(100vh - 210px); overflow-y: auto;">
+                                    <div class="colFlexContainer" id="memberlist" c-bind="memberlist:list" style="gap: 10px;" listidx="0" step="10">
+                                        <item>
+                                            <div class="rowView light" c-bind="workerpkey:workerpkey:showMemberDetail" style="cursor:pointer;">
+                                                <div class="rowItem">
+                                                    <span c-bind="name:text"></span>
+                                                </div>
+                                                <div class="rowItem" style="width: 15%;">
+                                                    <span c-bind="status:text:formatMemberStatus"></span>
+                                                </div>
+                                            </div>                                
+                                        </item>
+                                        <div class="bindmore" bind-id="memberlist" onclick="fetchListMember($('.memberlist').get(0).teamdata)">
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        <emptyitem style="display: none;">
+                                            <div class="emptyContainer">
+                                                <div class="msgBox">
+                                                    <span>멤버가 없습니다.</span>                                            
+                                                </div>
+                                            </div>
+                                        </emptyitem>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>                
+            </article>
+            <aside></aside>
+        </main>
+    </div>
+</body>
+</html>
+<script>
+
+    function runSetup() {
+        findItems(document);        
+        fetchListTeam();
+    }
+
+    function fetchListTeam() {
+        const listname = "teamlist";
+        const config = {
+            start : getListStart(listname),
+            limit : getListLimit(listname)
+        }
+        COMAPI.listTaskManager(config).then(data => {            
+            bindView(document.querySelector('.' + listname), data.body);
+            setBindMore(data.body.next, listname);
+        });
+    }
+
+    function fetchListMember(team) {
+        const listname = "memberlist"
+        const config = {
+            taskmanagerpkey : team.taskmanagerpkey,
+            start : getListStart(listname),
+            limit : getListLimit(listname)
+        }
+        COMAPI.listMember(config).then(data => {                                    
+            data.body.teamname = team.name;                      
+            bindView(document.querySelector('.' + listname), data.body);
+            setBindMore(data.body.next, listname);
+        });
+    }
+
+    function onSelectTeam(v, d, e) {        
+        if(d.status == "NOTALLOWED") { $(e).addClass('delete'); }
+        $(e).on('click', function(ev){
+            ev.stopPropagation();
+            hideAside();
+            clearItems('.memberlist');
+            $('.memberlist').show();            
+            $('.teamlist .rowView').removeClass('active');
+            $(e).addClass('active');            
+            $('.memberlist').get(0).teamdata = d;
+            showAside('../aside/detailteam.html', function(){ mapAside(d) });
+            fetchListMember(d);            
+        })
+        return v;
+    }
+
+    
+
+    function createTeam() {
+        $('.teamlist .rowView').removeClass('active');
+        showAside('../aside/createteam.html');
+    }
+    
+
+    function updateUI(msg) {
+        hideAside();
+        showToast(msg);
+        clearItems('.teamlist');
+        clearItems('.memberlist');
+        $('.memberlist').hide();
+        fetchListTeam();
+    }
+    
+    function updateMemberUI(msg) {
+        $('aside').hide();
+        showToast(msg);        
+        clearItems('.memberlist');
+        $('.memberlist').hide();
+        $('.teamlist .rowView.active').click();
+    }
+
+    function showMemberDetail(v, d, e) {
+        if(d.status == "NOTTEAM") { $(e).addClass('delete'); }
+        $(e).on('click', function(){            
+            $('.memberlist .rowView').removeClass('active');
+            $(e).addClass('active');
+            showAside('../aside/detailmember.html', function(){ mapAside(d)});
+        })
+    }
+
+</script>

@@ -1,0 +1,106 @@
+<div class="fileViewerFragment">
+    <div class="fragmentMain">
+
+        <div class="rowFlexContainer" style="gap: 16px;">
+            <div class="overflowContainer" style="max-height: 725px; overflow-y: auto; overflow-x: hidden; min-width: 240px; max-width: 240px;">
+                <div class="itemList versionlist" style="min-width: 240px; max-width: 240px;">
+                    <div class="colFlexContainer" c-bind="versionlist:list" style="gap: 10px;">
+                        <item>
+                            <div class="rowView light" c-bind="updatesetpkey:updatesetpkey:showEntryList" style="cursor: pointer;">                                                            
+                                <div class="rowItem">
+                                    <span class="material-icons" c-bind="kind:text:formatFileCommitKind"></span>
+                                    <span c-bind="name:text"></span>
+                                </div>
+
+                            </div>
+                        </item>
+                        <emptyitem style="display: none;">
+                            <div class="emptyContainer">
+                                <div class="msgBox">
+                                    <span>버전이 없습니다.</span>                                            
+                                </div>
+                            </div>
+                        </emptyitem>
+                    </div>
+                </div>
+            </div>
+
+            <div class="itemList entrylist" style="display: none;">                
+                <div class="colFlexContainer" style="gap: 10px">
+                    <div class="entrypath" style="display: flex; flex-direction: row; width: 100%; min-height: 40px; align-items: center; font-size: 12px; background-color: white; padding: 0 8px; border-radius: 4px; gap: 4px;">
+                        <span class="rootpath" style="cursor: pointer;">루트</span>
+                    </div>
+                    <div class="entrylistContainer" style="display: flex; flex-direction: row; gap: 16px; max-height: 675px; overflow-y: auto; overflow-x: hidden; padding: 16px; flex-wrap: wrap; height: fit-content; background-color: white; border-radius: 4px;" c-bind="entrylist:list">
+                        <item>
+                            <div class="entryView" c-bind="entrypkey:entrypkey:setOnEntryViewClick">
+                                <div class="thumb">
+                                    <span class="material-icons thumbicon" c-bind="isfile:text:formatEntryIcon">folder</span>
+                                </div>
+                                <div class="info">
+                                    <span c-bind="name:text"></span>
+                                </div>
+                            </div>
+                        </item>
+                        <emptyitem style="display: none;">
+                            <div class="emptyContainer">
+                                <div class="msgBox">
+                                    <span>파일이 없습니다.</span>                                            
+                                </div>
+                            </div>
+                        </emptyitem>         
+                    </div>                    
+                </div>                
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>    
+    findItems($('.fileViewerFragment').get(0));
+    
+    function updateEntrylist(data) {        
+        clearItems('.entrylist');            
+        bindView($('.entrylist').get(0), data);        
+        appendPath(data);
+    }    
+
+    function appendPath(data) {
+        const path = document.createElement('span');
+        path.textContent = data.name;
+        path.classList.add('path');
+        path.style.cursor = 'pointer';
+        path.addEventListener('click', function() {
+            //hideAside();
+            $(this).nextAll('.path').remove();
+            $(this).remove();
+            updateEntrylist(data);
+        });
+        document.querySelector('.entrypath').appendChild(path);
+    }
+
+    function showEntryList(v, d, e) {
+        $(e).on('click', function() {
+            $('.versionlist .rowView').removeClass('active');
+            $(this).addClass('active');            
+            showAside('../aside/detailentryversion.html', function(){ mapAside(d)});
+            $('.entrylist').show();
+            $('.path').remove();
+            $('.rootpath').text(d.name);
+            $('.rootpath').on('click', function(){ $('.versionlist .rowView.active').click()});
+            clearItems('.entrylist');
+            bindView($('.entrylist').get(0), {entrylist : getTreeFromArray(d.entrylist, -1, 0)} ); 
+        });
+        return v;
+    }
+
+    function setOnEntryViewClick(v, d, e) {
+        $(e).on('click', function(){
+            $('.entryView').removeClass('active');
+            $(e).addClass('active');
+        });        
+        return onEntryViewClick(v, d, e);
+    }
+
+    
+</script>

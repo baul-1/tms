@@ -1,0 +1,147 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">필터</span>    
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">  
+        <div class="asideContent">
+            <div class="propertyView titlefilterlist">
+                <span class="key">타이틀</span>
+                <select name="titlepkey" id="titlefilter" c-bind="titlefilterlist:listtemplete" c-tag="c-item" style="font-size: 12px;" onchange="onTitleFilterChanged(this)">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="titlename:option, titlepkey:value"></option>
+                </select>                
+            </div>
+            <div class="propertyView episodefilterlist">
+                <span class="key">에피소드</span>
+                <select name="episodepkey" id="episodefilter" c-bind="episodefilterlist:listtemplete" c-tag="c-item" style="font-size: 12px;" onchange="onEpisodeFilterChanged(this)">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="episodename:option, episodepkey:value"></option>
+                </select>                
+            </div>
+            <div class="propertyView taskfilterlist">
+                <span class="key">태스크</span>
+                <select name="taskpkey" id="taskfilter" c-bind="tasklist:listtemplete" c-tag="c-item" style="font-size: 12px;" onchange="onTaskFilterChanged(this)">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="taskname:option, taskpkey:value"></option>
+                </select>                
+            </div>
+            <div class="propertyView workfilterlist">
+                <span class="key">작업</span>
+                <select name="workpkey" id="workfilter" c-bind="worklist:listtemplete" c-tag="c-item" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="name:option, workpkey:value"></option>
+                </select>                
+            </div>
+            <div class="propertyView workerfilterlist">
+                <span class="key">작업자</span>
+                <select name="workerpkey" id="workerfilter" c-bind="workerfilterlist:listtemplete" c-tag="c-item" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option listtempitem c-item="workername:option, workerpkey:value"></option>
+                </select>                
+            </div>
+            <div class="propertyView statusfilterlist">
+                <span class="key">상태</span>
+                <select name="workstatus" id="statusfilter" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option value="REG">수락대기</option>
+                    <option value="ACCEPT">수락</option>
+                    <option value="ING">진행</option>
+                    <option value="CANCEL">취소</option>
+                    <option value="DONE">완료</option>
+                    <option value="FAIL">부분완료</option>
+                </select>                
+            </div>
+            <div class="propertyView requestfilterlist">
+                <span class="key">요청</span>
+                <select name="workreq" id="requestfilter" style="font-size: 12px;">
+                    <option value="ALL">ALL</option>
+                    <option value="Y">요청있음</option>
+                </select>                
+            </div>
+        </div>              
+        <div class="asideFooter">
+            <div class="buttonView filterbutton" onclick="submitGanttFilter();" c-bind="entrypkey:entrypkey:">
+                <span>적용</span>
+            </div>       
+        </div>
+    </div>
+</div>
+<script>
+    function mapAside(d) {
+        console.log(d);
+        $('.asideView').get(0).adata = d;        
+        const data = d;
+        data.titlefilterlist = getUniqueList(d.tasklist, "titlepkey");        
+        data.episodefilterlist = getUniqueList(d.tasklist, "episodepkey");                
+        data.worklist = getChildList(d.tasklist, "worklist", "workpkey");
+        data.workerfilterlist = getUniqueList(d.worklist, "workerpkey");
+        bindView($('.asideView').get(0), data);
+        setFilterData($('.filtericon').get(0).filterdata);
+    }
+
+    function setFilterData(filterdata) {                     
+        setFilteredIndex("titlepkey", "titlefilter", filterdata);
+        setFilteredIndex("episodepkey", "episodefilter", filterdata);
+        setFilteredIndex("taskpkey", "taskfilter", filterdata);
+        setFilteredIndex("workpkey", "workfilter", filterdata);            
+        setFilteredIndex("workerpkey", "workerfilter", filterdata);   
+        $('.filterbutton').click();        
+    }
+
+    function onTitleFilterChanged(ele) {
+        const selectedTitlepkey = ele.value;        
+        let epilist = getUniqueList($('.asideView').get(0).adata.tasklist, "episodepkey");
+        let tasklist = getUniqueList($('.asideView').get(0).adata.tasklist, "taskpkey");        
+        let worklist = getChildList($('.asideView').get(0).adata.tasklist, "worklist", "workpkey");        
+        if(selectedTitlepkey != "ALL") {
+            epilist = epilist.filter(epi => { return epi.titlepkey == selectedTitlepkey }); 
+            tasklist = tasklist.filter(task => {return task.titlepkey == selectedTitlepkey });
+            worklist = worklist.filter(work => {
+                for(i=0; i<tasklist.length; i++) {
+                    if(tasklist[i].taskpkey == work.taskpkey) return true;
+                }
+            });            
+        }                  
+        clearOptions('#episodefilter');        
+        clearOptions('#taskfilter');        
+        clearOptions('#workfilter');        
+        bindView($('.episodefilterlist').get(0), { episodefilterlist : epilist });        
+        bindView($('.taskfilterlist').get(0), { tasklist : tasklist });        
+        bindView($('.workfilterlist').get(0), { worklist : worklist });
+
+    }
+
+    function onEpisodeFilterChanged(ele) {
+        const selectedEpisodepkey = ele.value;        
+        let tasklist = getUniqueList($('.asideView').get(0).adata.tasklist, "taskpkey");
+        let worklist = getChildList($('.asideView').get(0).adata.tasklist, "worklist", "workpkey");
+        if(selectedEpisodepkey != "ALL") {
+            tasklist = tasklist.filter(task => { return task.episodepkey == selectedEpisodepkey });
+            worklist = worklist.filter(work => {
+                for(i=0; i<tasklist.length; i++) {
+                    if(tasklist[i].taskpkey == work.taskpkey) return true;
+                }
+            });
+        }              
+        clearOptions('#taskfilter');
+        clearOptions('#workfilter');    
+        bindView($('.taskfilterlist').get(0), { tasklist : tasklist });
+        bindView($('.workfilterlist').get(0), { worklist : worklist });
+    }
+
+    function onTaskFilterChanged(ele) {
+        const selectedTaskpkey = ele.value;                
+        let worklist = getChildList($('.asideView').get(0).adata.tasklist, "worklist", "workpkey");
+        if(selectedTaskpkey != "ALL") {            
+            worklist = worklist.filter(work => { return work.taskpkey == selectedTaskpkey });
+        }                      
+        clearOptions('#workfilter');        
+        bindView($('.workfilterlist').get(0), { worklist : worklist });
+    }
+
+    function submitGanttFilter() {
+        const filtered = getDataFrom('.asideView');
+        onFilterSubmitClick(filtered);
+    }
+</script>

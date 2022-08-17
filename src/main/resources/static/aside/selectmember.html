@@ -1,0 +1,65 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">맴버 선택</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">
+        <div class="asideContent">
+            <div class="itemList workerlist">
+                <div class="itemListStart">
+                    <div class="rowFlexContainer" style="gap:10px; align-items: center;">
+                        <span class="itemListTitle">멤버</span>                    
+                    </div>
+                    <div class="rowView" style="border-bottom: 1px solid var(--theme-color-bg);">
+                        <div class="rowItem">
+                            <span>이름</span>
+                        </div>
+                        <div class="rowItem">
+                            <span>상태</span>
+                        </div>
+                    </div>                
+                </div>
+                <div class="itemListEnd">
+                    <div class="overFlowContainer" style="max-height: 660px; overflow-y: auto;">
+                        <div class="colFlexContainer" c-bind="workerlist:list" style="gap: 10px;">
+                            <item>
+                                <div class="rowView" c-bind="status:status:selectmember" style="border: 1px solid var(--theme-color-bg); cursor: pointer;">
+                                    <div class="rowItem">
+                                        <span c-bind="name:text"></span>
+                                    </div>
+                                    <div class="rowItem">
+                                        <span c-bind="status:text:formatMemberStatus"></span>
+                                    </div>
+                                </div>                                
+                            </item>
+                            <emptyitem style="display: none;">
+                                <div class="emptyContainer">
+                                    <div class="msgBox">
+                                        <span>멤버가 없습니다.</span>                                            
+                                    </div>
+                                </div>
+                            </emptyitem>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="asideFooter"></div>
+    </div>
+</div>
+<script>
+    findItems($('.asideView').get(0));
+    function mapAside(d) {     
+        console.log(d);   
+        $('.asideView').get(0).adata = d; 
+        bindView($('.asideView').get(0), d);
+    }
+
+    function selectmember(v, d, e) {
+        $(e).on('click', function() {
+            if(v != "NORMAL") { showToast('작업을 할당할 수 없는 맴버입니다.'); return; }
+            onSelectMember(v, d, e);
+        });
+        return v;
+    }
+</script>

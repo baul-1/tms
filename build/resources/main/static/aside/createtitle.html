@@ -1,0 +1,31 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">타이틀 추가</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">     
+        <div class="asideContent">
+            <img src="../img/noimage.jpg" name="thumb" class="imageSelector" alt="img" onclick="selectFile(this)">
+            <div class="inputView">
+                <input id="name" name="name" type="text" required>
+                <label for="name">타이틀 이름</label>
+            </div>
+        </div>   
+        <div class="asideFooter">
+            <div class="buttonView" onclick="submitCreateTitle()">
+                <span>확인</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitCreateTitle() {
+        var formdata = getDataFrom('.asideView');       
+        if(formdata.name.trim() == "") { showToast("타이틀 이름을 입력하세요"); return; }        
+        COMAPI.addTitle(formdata).then(res => {
+            if(res.head.status != "OK") { showToast('타이틀을 만들지 못했습니다.', "var(--theme-color-alt-b)"); return ;}
+            updateUI('타이틀이 추가되었습니다.');
+        }
+        ).catch();
+    }
+</script>

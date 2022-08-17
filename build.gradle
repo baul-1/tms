@@ -1,0 +1,50 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.icode'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //implementation platform('com.linecorp.armeria:armeria-bom:1.11.0')
+    implementation platform('io.netty:netty-bom:4.1.66.Final')
+    //implementation 'com.linecorp.armeria:armeria-spring-boot2-webflux-starter'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    //implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+  //  implementation "com.linecorp.armeria:armeria:1.11.0"
+
+
+    implementation group: 'org.mindrot', name: 'jbcrypt', version: '0.3m'
+    implementation 'org.jetbrains:annotations:20.1.0'
+
+
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    // Logging
+    runtimeOnly 'ch.qos.logback:logback-classic:1.2.5'
+    runtimeOnly 'org.slf4j:log4j-over-slf4j:1.7.32'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20210307'
+
+}
+
+test {
+    useJUnitPlatform()
+}

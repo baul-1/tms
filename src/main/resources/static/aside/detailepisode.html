@@ -1,0 +1,89 @@
+<div class="asideView">
+    <div class="asideHeader">
+        <span class="asideTitle">에피소드 상세</span>
+        <span class="asideClose material-icons" onclick="hideAside()">close</span>
+    </div>
+    <div class="asideMain">    
+        <div class="asideContent">            
+            <div class="propertyView">
+                <span class="key">에피소드 이름</span>
+                <span class="value" c-bind="name:text"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">상태</span>
+                <span class="value" c-bind="status:text:formatEpisodeStatus"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">생성일</span>
+                <span class="value" c-bind="createdate:text:formatDateNum"></span>
+            </div>
+            <div class="propertyView">
+                <span class="key">태스크</span>
+                <span class="value" c-bind="tasklist:text:formatLength"></span>
+            </div>
+        </div>    
+        <div class="asideFooter">
+            <div class="buttonView" c-bind="status:status:startEpisode">
+                <span>시작</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:modifyEpisode">
+                <span>수정</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:regEpisode">
+                <span>준비</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:deleteEpisode">
+                <span>삭제</span>
+            </div>
+            <div class="buttonView" c-bind="status:status:recoverEpisode">
+                <span>복구</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function mapAside(d) {    
+        console.log(d);    
+        $('.asideView').get(0).adata = d;
+        bindView($('.asideView').get(0), d);
+    }
+
+    function startEpisode(v, d, e) {
+        if(v != "REG") { $(e).hide(); }
+        $(e).on('click', function(){
+            showAside('../aside/startepisode.html', function(){mapAside(d)});
+        });
+        return v;        
+    }
+
+    function modifyEpisode(v, d, e) {        
+        $(e).on('click', function(){
+            showAside('../aside/modifyepisode.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+
+    function regEpisode(v, d, e) {
+        if(v != "NORMAL") { $(e).hide(); }
+        $(e).on('click', function(){
+            showAside('../aside/regepisode.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+
+    function deleteEpisode(v, d, e) {
+        if(v == "INVISIBLE") { $(e).hide(); }
+        $(e).on('click', function(){
+            showAside('../aside/deleteepisode.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+
+    function recoverEpisode(v, d, e) {
+        if(v != "INVISIBLE") { $(e).hide(); }
+        $(e).on('click', function(){
+            showAside('../aside/recoverepisode.html', function(){mapAside(d)});
+        });
+        return v;
+    }
+</script>
