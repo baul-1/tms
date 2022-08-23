@@ -1,0 +1,1 @@
+insert into tms.company (name, compw) values ('tms1', '$2a$10$b3/oPRFMuEe0OuwAE1iqpuPMBkuy7IDez/rq2O3.WO1WvIaiE6AZ.');

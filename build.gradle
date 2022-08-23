@@ -23,7 +23,11 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
-  //  implementation "com.linecorp.armeria:armeria:1.11.0"
+    //  implementation "com.linecorp.armeria:armeria:1.11.0"
+
+
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.36.0.3'
 
 
     implementation group: 'org.mindrot', name: 'jbcrypt', version: '0.3m'
@@ -34,6 +38,11 @@ dependencies {
     // Logging
     runtimeOnly 'ch.qos.logback:logback-classic:1.2.5'
     runtimeOnly 'org.slf4j:log4j-over-slf4j:1.7.32'
+
+
+    // https://mvnrepository.com/artifact/ch.vorburger.mariaDB4j/mariaDB4j
+    implementation group: 'ch.vorburger.mariaDB4j', name: 'mariaDB4j', version: '2.4.0'
+
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
