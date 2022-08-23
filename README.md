@@ -67,10 +67,10 @@
   * MariaDB
   
 
-* MariaDB DB4J  
+  * MariaDB DB4J  
   
 
-* java 17
+  * java 17
 
 ## Front
   * JavaScript
@@ -125,3 +125,9 @@ spring.redis.hostnotport=59.188.8.115
 spring.redis.port=
 
 server.uploadroot=C/:A17
+
+```
+
+# CI / CD
+ * GitLab - Runners 
+ * Gitlab - Variables 변수 셋팅
