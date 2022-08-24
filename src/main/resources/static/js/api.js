@@ -1,7 +1,7 @@
 const TEST_MODE = true;
 
-const IMG_SERVER = TEST_MODE ? "http://192.168.50.24:3000/" : "https://tms.webtoon.ai:3000/" ; 
-const API_SERVER = TEST_MODE ? "http://192.168.50.24:3000/" : "https://tms.webtoon.ai:3000/" ; 
+const IMG_SERVER = TEST_MODE ? "http://localhost:3000/" : "" ;
+const API_SERVER = TEST_MODE ? "http://localhost:3000/" : "" ;
 
 
 class Api {

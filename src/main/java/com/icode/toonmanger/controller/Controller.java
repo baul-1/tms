@@ -3,16 +3,12 @@ package com.icode.toonmanger.controller;
 
 import com.icode.toonmanger.config.*;
 import com.icode.toonmanger.mapper.FaMapper;
-
 import com.icode.toonmanger.mapper.MapperForTaskManager;
 import com.icode.toonmanger.mapper.MapperForWorker;
 import com.icode.toonmanger.security.User;
 import io.netty.util.concurrent.FastThreadLocalThread;
-import org.apache.ibatis.annotations.Select;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.redis.core.HashOperations;
@@ -20,12 +16,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServerRequest;
-import reactor.netty.http.server.HttpServerResponse;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -36,9 +30,6 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -611,7 +602,9 @@ public class Controller {
 
         param.validateEmpty("t");
 
-        redis.delete(getRedisKey(param.getS("t")));
+        HashOperations<String,String,String> der = redis.opsForHash();
+
+        der.delete(getRedisKey(param.getS("t")));
 
         ret.setStatus("OK");
 
@@ -763,7 +756,7 @@ public class Controller {
     }
 
     private String getRedisKey(String token){
-        String rkey = "ICODE:SESSION:" + token;
+        String rkey = "TMS:SESSION:" + token;
 
         return rkey;
     }

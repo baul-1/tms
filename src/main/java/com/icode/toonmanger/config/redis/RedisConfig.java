@@ -1,15 +1,11 @@
-package com.icode.toonmanger.config;
+package com.icode.toonmanger.config.redis;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 
@@ -24,11 +20,14 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         System.out.println(redishost);
-        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redishost,redisport);
-        lettuceConnectionFactory.setDatabase(7);
+//        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redishost,redisport);
+//        lettuceConnectionFactory.setDatabase(7);
+
+        PaulRedisConnectionFactory lettuceConnectionFactory = new PaulRedisConnectionFactory();
 
         return lettuceConnectionFactory;
     }
+
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
@@ -41,6 +40,7 @@ public class RedisConfig {
         return redisTemplate;
     }
 
+
     @Bean
     public StringRedisTemplate stringRedisTemplate() {
         StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
@@ -49,5 +49,8 @@ public class RedisConfig {
         stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
         return stringRedisTemplate;
     }
+
+
+
 
 }

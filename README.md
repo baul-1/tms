@@ -80,7 +80,7 @@
       안쓰고 실행 될 수 있게 하기 위해 MariaDB DB4J를 설정해놨습니다. Redis 를 사용하실 때 같이 Maria or Mysql을 설치해서 사용하시면 되겠습니다.
   
 
-* resources 폴더 안에 init_db 에 DDL 문이 작성 되어 있으니깐 보시고 DB에 작성 해주시면 됩니다.
+  * resources 폴더 안에 init_db 에 DDL 문이 작성 되어 있으니깐 보시고 DB에 작성 해주시면 됩니다.
     
 
   * Redis database 번호는 config 폴더에 RedisConfig를 수정하셔서 사용하시면 됩니다.

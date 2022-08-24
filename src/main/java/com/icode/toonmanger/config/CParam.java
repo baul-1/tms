@@ -1,18 +1,11 @@
 package com.icode.toonmanger.config;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icode.toonmanger.security.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
 
 
 public class CParam extends CMap{
@@ -47,11 +40,13 @@ public class CParam extends CMap{
         User ret = null;
         String token = this.getS("t");
 
-        String rkey = "ICODE:SESSION:" + token;
+        String rkey = "TMS:SESSION:" + token;
 
         redis.expire(rkey, Duration.ofDays(1));
 
         HashOperations<String,String,String> der = redis.opsForHash();
+
+
         String kind = der.get(rkey,"kind");
 
         if("COM".equals(kind)){
