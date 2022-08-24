@@ -1,5 +1,8 @@
 # 웹툰 공정 관리 시스템 (Toon Manager System)
 
+## 어드민 계정
+ * ID : tms1
+ * PW : 1234
 
 ## 용어 정리
 
@@ -55,7 +58,7 @@
 
 
 
-#환경 설정
+# 환경 설정
 
 ## Server
   * Spring boot 2.5.5
