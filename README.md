@@ -76,17 +76,13 @@
   * JavaScript
 
 ## DB
-  *  DB Server 는 mysql, maria 를 쓰셔도 상관 없습니다. 빌드할 때 외부 DB Server를
-      안쓰고 실행 될 수 있게 하기 위해 MariaDB DB4J를 설정해놨습니다. Redis 를 사용하실 때 같이 Maria or Mysql을 설치해서 사용하시면 되겠습니다.
-  
+  * Maridb, Redis 로컬에서 사용할 수 있게 설정해놨습니다. 다른 서버를 쓰실 경우 Application 설정만 바꾸시면됩니다.
 
-  * resources 폴더 안에 init_db 에 DDL 문이 작성 되어 있으니깐 보시고 DB에 작성 해주시면 됩니다.
-    
+  * resources 폴더 안에 init_db 에 DDL 문이 작성 되어 있으니깐 Trigger, Event 를 DB 에서 실행 하시면됩니다.
 
-  * Redis database 번호는 config 폴더에 RedisConfig를 수정하셔서 사용하시면 됩니다.
 
 ## Spring Application 설정 
-  * 환견변수로 설정 되어 있는 값들은 IDE 에서 설정하시면 됩니다.
+  * 환견변수로 설정 되어 있는 값들은 IDE 에서 설정하시거나 정적으로 입력 하셔도됩니다.
   
 
 
@@ -99,9 +95,9 @@ server.compression.mime-types=application/json,application/xml,text/html,text/xm
 server.compression.min-response-size=2KB
 
 spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
-spring.datasource.url=jdbc:mysql://59.188.8.115:3302/tms
-spring.datasource.username=user
-spring.datasource.password=1234
+spring.datasource.url=jdbc:mysql:jdbc:mariadb://localhost:3309/tms
+spring.datasource.username=root
+spring.datasource.password=
 
 mariaDB4j.dataDir=C:/embedded/db
 mariaDB4j.port=3309
@@ -121,7 +117,7 @@ spring.redis.lettuce.pool.max-active=10
 spring.redis.lettuce.pool.max-idle=10
 spring.redis.lettuce.pool.min-idle=2
 
-spring.redis.hostnotport=59.188.8.115
+spring.redis.hostnotport=
 spring.redis.port=
 
 server.uploadroot=C/:A17
