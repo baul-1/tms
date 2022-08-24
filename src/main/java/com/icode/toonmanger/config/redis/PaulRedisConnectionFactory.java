@@ -19,7 +19,7 @@ public class PaulRedisConnectionFactory implements RedisConnectionFactory {
 
     @Override
     public RedisClusterConnection getClusterConnection() {
-        throw new RuntimeException("A18");
+        throw new RuntimeException("getClusterConnectionError");
     }
 
     @Override
@@ -29,20 +29,20 @@ public class PaulRedisConnectionFactory implements RedisConnectionFactory {
 
     @Override
     public RedisSentinelConnection getSentinelConnection() {
-        throw new RuntimeException("redisConnection");
+        throw new RuntimeException("PaulRedisConnectionFactory - getSentinelConnectionError");
     }
 
     @Override
     public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
 
-        return new abc(ex.getMessage(),ex);
+        return new PaulRedisConnectionFactoryDataException(ex.getMessage(),ex);
     }
 }
 
 
-class abc extends DataAccessException{
+class PaulRedisConnectionFactoryDataException extends DataAccessException{
 
-    public abc(String msg, Throwable cause) {
+    public PaulRedisConnectionFactoryDataException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

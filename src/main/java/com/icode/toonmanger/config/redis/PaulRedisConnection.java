@@ -98,7 +98,7 @@ public class PaulRedisConnection implements RedisConnection {
 
     @Override
     public RedisSentinelConnection getSentinelConnection() {
-        throw new RuntimeException("");
+        throw new RuntimeException("PaulRedisConnection - getSentinelConnectionError");
     }
 
     @Override
