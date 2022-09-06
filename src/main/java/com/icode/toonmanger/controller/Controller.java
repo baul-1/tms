@@ -350,9 +350,6 @@ public class Controller {
     @CrossOrigin(origins = "*")
     public Flux<DataBuffer> downloadDirectory(@GetParam CParam param, ServerHttpResponse response){
 
-
-        response.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        response.getHeaders().setContentDisposition(ContentDisposition.attachment().filename("a.zip").build());
         Flux<DataBuffer> ret = null;
 
         param.validateEmpty("entrypkey", "workpkey", "updatesetpkey");
@@ -403,8 +400,6 @@ public class Controller {
     @CrossOrigin(origins = "*")
     public  Flux<DataBuffer> downloadUpdateSet(@GetParam CParam param, ServerHttpResponse response){
 
-        response.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        response.getHeaders().setContentDisposition(ContentDisposition.attachment().filename("a.zip").build());
         Flux<DataBuffer> ret = null;
 
 
@@ -448,8 +443,6 @@ public class Controller {
     @CrossOrigin(origins = "*")
     public  Flux<DataBuffer> downloadTaskDoneEntry(@GetParam CParam param, ServerHttpResponse response){
 
-        response.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        response.getHeaders().setContentDisposition(ContentDisposition.attachment().filename("a.zip").build());
         Flux<DataBuffer> ret = null;
 
 
@@ -486,8 +479,6 @@ public class Controller {
     @CrossOrigin(origins = "*")
     public  Flux<DataBuffer> downloadTaskEntryDirectory(@GetParam CParam param, ServerHttpResponse response){
 
-        response.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        response.getHeaders().setContentDisposition(ContentDisposition.attachment().filename("a.zip").build());
         Flux<DataBuffer> ret = null;
 
 
